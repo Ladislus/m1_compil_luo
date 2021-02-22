@@ -19,6 +19,8 @@ int main((char array) array args) {
 }
 ```
 
+
+&nbsp;
 ## Variables globales
 
 On peut déclarer et utiliser  des variables globales. Elles sont  visibles dans l'ensemble du programme principal 
@@ -33,6 +35,8 @@ static type maVarGlabal;
 maVarGlabal  = newValue;
 ```
 
+
+&nbsp;
 ## Découpage du programme
 
 On peut découper le programme. Les fichiers importés peuvent  contenir  des fonctions,
@@ -51,6 +55,8 @@ import  “../rep1/nomFichier”
 import  “nomFichier”
 ```
 
+
+&nbsp;
 ## Commentaires
 
 Pour commenter, il y a deux façons possibles. On peut commenter une ligne ou plusieurs lignes. Il n’y a pas d’emboîtement à l’intérieur des commentaires. Lorsque nous avons **/\***, tout le code entre **/\*** et le prochain ***/** seront mis en commentaire.
