@@ -1,6 +1,6 @@
-#Fonctions prédéfinies
+# Fonctions prédéfinies
 
-##Entrée utilisateur
+## Entrée utilisateur
 
 La fonction **input** permet à l’utilisateur de saisir une valeur au programme. 
 Le type de la valeur saisie peut être choisi lors de l'affectation : un caractère, une chaîne de caractères, un entier ou un booléen.
@@ -16,7 +16,7 @@ bool input()
 
 
 &nbsp;
-##Affichage sortie
+## Affichage sortie
 
 La procédure **print** permet d’afficher une valeur dans la fenêtre de sortie. 
 Elle prend en paramètre un caractère, une chaîne de caractères, un entier ou un booléen et l’affiche.
@@ -41,7 +41,7 @@ avec un type T qui est de type char, char array, int ou bool.
 
 
 &nbsp;
-##Fonctions de conversion
+## Fonctions de conversion
 
 Il y a possiblité de changer le type d’une valeur, plusieurs fonctions prédéfinies de conversion sont disponibles 
 pour modifier les types char, char array, int et bool.
@@ -75,7 +75,7 @@ bool toBool(int value)
 
 
 &nbsp;
-##Assert
+## Assert
 
 La fonction assert permet de stopper l’exécution du programme si la condition **cdt** n’est pas remplie 
 alors le message **msg** s’affiche.
