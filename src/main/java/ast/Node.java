@@ -7,6 +7,6 @@ package ast;
     for the parse tree to generate the corresponding
     abstract syntax tree.
  */
-public interface Node {
-    <T> T accept(Visitor<T> visitor);
+public abstract class Node {
+    abstract <T> T accept(Visitor<T> visitor);
 }

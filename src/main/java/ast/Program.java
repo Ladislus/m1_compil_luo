@@ -1,6 +1,6 @@
 package ast;
 
-public class Program implements Node{
+public class Program extends Node{
     // TO COMPLETE
 
     public <T> T accept(Visitor<T> visitor){
