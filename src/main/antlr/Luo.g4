@@ -5,9 +5,9 @@ grammar Luo;
 // - function_definition: for function definitions
 // - global_declaration: for global variable declarations
 // - import: for import directives
+// - type_definition: for definitions of types (basically records)
 // - type_expression: for type expressions like int, bool, char array,
 //                    or the type of a dictionary (what is it?)
-// - type_definition: for definitions of types (basically records)
 // - declaration: for declarations
 // - instruction: for instructions, including blocks
 // - expression: for expressions
