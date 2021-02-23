@@ -16,6 +16,18 @@ grammar Luo;
 // TO MODIFY:
 program: EOF;
 
+expression : expression op=(Multiplication | Division | Modulo) expression                                                                  #MulDivMod
+    | expression op=(Plus | Minus) expression                                                                                               #AddSub
+    | expression op=(GreaterThan | GreaterOrEqual | LesserThan | LesserOrEqual | Different | Equal | LogicalAnd | LogicalOr) expression     #Comparison
+    | Negation expression                                                                                                                   #Not
+    | Minus expression                                                                                                                      #Opposite
+    | OpenedParenthesis expression ClosedParenthesis                                                                                        #Parenthesis
+    | Identifier                                                                                                                            #Identifier
+    | Integer                                                                                                                               #Integer
+    | Character                                                                                                                             #Character
+    | String                                                                                                                                #String
+    | Boolean                                                                                                                               #Boolean
+    ;
 // Some lexer rules.
 // Additional rules are needed for all the keywords and reserved symbols.
 // The naming convention for these new rules is that the non-terminal
@@ -28,8 +40,32 @@ Static: 'static';
 Public: 'public';
 Private: 'private';
 Minus: '-';
+Plus: '+';
+Multiplication: '*';
+Division: '/';
+Modulo: '%';
+GreaterThan: '>';
+GreaterOrEqual: '>=';
+Equal: '==';
+LesserThan: '<';
+LesserOrEqual: '<=';
+Different: '!=';
+Negation: '!';
+OpenedParenthesis: '(';
+ClosedParenthesis: ')';
+LogicalOr: '||';
+LogicalAnd: '&&';
 Underscore : '_';
+Escape: '\\';
 Letter: [a-zA-Z];
+Space: ' ';
+SimpleQuote: '\'';
+DoubleQuote: '"';
+True: 'true';
+False: 'false';
+Character: SimpleQuote ~['] SimpleQuote;
+String: DoubleQuote ~["]* DoubleQuote;
 Digit:  [0-9];
+Boolean: True | False;
 Identifier: (Underscore|Letter)(Underscore|Letter|Digit)*;
 Integer: (Minus)?Digit+;
