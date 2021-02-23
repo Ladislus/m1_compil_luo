@@ -68,8 +68,7 @@ expression :
     | Identifier                                                                                                                            #Identifier
     ;
 
-type_definition : Rec // À compléter
-                ;
+type_definition : Rec type_expression OpenBracket (type_expression Identifier Semicolon)* ClosedBracket;
 
 type_expression:
 // À revoir complètement. Les expressions de types sont :
@@ -102,6 +101,18 @@ type_expression:
 //    Identifier ClosedParenthesis)*
 //    (Comma OpenedParenthesis IdentifierStr Comma Identifier ClosedParenthesis )* ClosedBracket Semicolon
 
+function_definition : visibilite type_expression Identifier OpenedParenthesis argument_list? ClosedParenthesis OpenBracket (instruction*)? Return expression ClosedBracket
+    | visibilite Void Identifier OpenedParenthesis argument_list? ClosedParenthesis OpenBracket (instruction*)? Return expression ClosedBracket;
+
+visibilite : Public
+    |   Private;
+
+argument_list : (Identifier type_expression (Colon expression)?)
+    | ((Identifier type_expression (Colon expression)?) Comma)* (Identifier type_expression (Colon expression)?);
+
+imports : Import DoubleQuote ((Root|Division|'../')? Identifier (Division)? ) DoubleQuote
+    | Import DoubleQuote ((Root|Division|'../')? Identifier (Division)? ) ((Division|'../')? Identifier (Division)? ) DoubleQuote;
+
 
 // Some lexer rules.
 // Additional rules are needed for all the keywords and reserved symbols.
@@ -114,6 +125,7 @@ type_expression:
 Static: 'static';
 Public: 'public';
 Private: 'private';
+Void:'void';
 Minus: '-';
 Plus: '+';
 Multiplication: '*';
@@ -155,4 +167,8 @@ EqualSymbol: '=';
 Identifier: (Underscore|Letter)(Underscore|Letter|Digit)*;
 Letter: [a-zA-Z];
 WS: [ \t\r\n]+ -> skip;
-
+Import:'import';
+Return:'return';
+Colon:':';
+Root:'./';
+Parent:'../';

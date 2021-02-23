@@ -6,26 +6,35 @@ On déclare une fonction en indiquant tout d'abord le type de retour, le nom de
 la fonction, ensuite entre parenthèses se trouve les paramètres listés.
 On met ensuite, délimité par des crochets, le code de la fonction.
 
-**Syntaxe déclaration d'une fonction:**
+Pour indiquer l'expression retournée, on utilise le mot-clé **return**.
+
+**Syntaxe déclaration d'une fonction :**
 ```
 visibilité type_de_retour nom_de_la_fonction(...){
-...
-
+    ...
+    return expression;
 }
 ```
-
-**Syntaxe permettant de retourner une valeur :**
+**Exemple :**
 ```
-return expression;
-
+public int fonctionAddition(...){
+    ...
+    return 5+5;
+}
 ```
 
 
 &nbsp;
 ## Où définir une fonction 
 
-Une fonction peut être définit dans le corps du programme principal.
+Une fonction peut être définit dans le corps du programme principal. 
 Il n'est pas possible de définir une fonction à l'intérieur d'une autre fonction.
+
+
+&nbsp;
+## Généricité
+
+La généricité n'est pas supportée.
 
 
 &nbsp;
@@ -37,33 +46,43 @@ Le nombre de paramètres est fixe.
 
 **Syntaxe :**
 ```
-type nom ,type nom ...
+(type nom,type nom) 
 
 ```
 
-&nbsp;
-## Généricité
+**Exemple :**
+```
+public int addition(int a, int b){
 
-La généricité n'est pas supportée.
+    return a+b;
+}
+```
 
+###
 
-&nbsp;
-## Définir des valeurs par défaut aux paramètres
+Pour définir des paramètres avec des valeurs par défaut à la fin de la liste des paramètres. On définit la valeur par défaut en ajoutant **:** suivi de la valeur.
 
-tout d'abord on place les paramètres avec des valeurs par défaut à la fin de la liste des paramètres. On définit la valeur par défaut en ajoutant **:** suivi de la valeur.
-
-Pour l'appel des fonctions il faut préciser le nom de l'argument suivit de **:** suivit de sa valeur pour chaque paramètres. Si les paramètres ayant une valeur par défaut ne sont pas appelés, on leur affecte leur valeur par défaut.
+Pour l'appel des fonctions il faut préciser le nom de l'argument suivit de "**:**" suivit de sa valeur pour chaque paramètres. Si les paramètres ayant une valeur par défaut ne sont pas appelés, on leur affecte leur valeur par défaut.
 
 Avec la mention des noms des arguments dans l'appel, l'ordre des paramètres n'a pas à être respecté
 
 
 **Syntaxe :**
 ```
-type fonction(type a, type b:valeur_par_defaut) {...};
+(type nom, type nom:valeur_par_defaut)
 ```
-**Syntaxe appel de fonctions:**
+**Exemple de déclaration :**
 ```
-fonction(a:5)
+public int addition(int a, int b:5){
+
+    return a+b;
+}
+```
+
+**Exemple d'appel :**
+```
+fonction(a:6);
+fonction(a:4, b:7);
 ```
 
 
