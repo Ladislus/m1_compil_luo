@@ -14,6 +14,13 @@ int input()
 bool input()
 ```
 
+**Exemples :**  
+
+```
+int number = input(); // 51
+char array string = input(); // "une chaine"
+```  
+
 
 &nbsp;
 ## Affichage sortie
@@ -31,6 +38,14 @@ void print(int msg)
 void print(bool msg)
 ```
 
+**Exemples :**
+
+```
+print("Hello world!");
+print(35);
+```  
+
+
 Il y a aussi la possibilité d’afficher plusieurs messages dans un print 
 avec un type T qui est de type char, char array, int ou bool.
 
@@ -38,6 +53,13 @@ avec un type T qui est de type char, char array, int ou bool.
 **Notation :**
 
     void print(T msgs . . .)
+
+**Exemples :**
+
+```
+print("Luo version", 1);
+print("Number ", 1, " compiler !")
+```  
 
 
 &nbsp;
@@ -68,10 +90,17 @@ int toInt(bool value)
 ```
 Convertir en bool :
 ```
-bool toBool(char value)
-bool toBool(char array value)
 bool toBool(int value)
 ```
+
+**Exemples :**
+
+```
+char A = toChar(41); // A = 'A'
+char array string = toString(41); // string = "41"
+int number = toInt("41"); // number = 41
+bool boolean = toBool(1); // boolean = true
+```  
 
 
 &nbsp;
@@ -83,3 +112,10 @@ alors le message **msg** s’affiche.
 **Notation :**
 
     assert(bool cdt, char array msg); 
+
+**Exemples :**
+
+```
+assert(1 + 1 == 2, "error computing"); // no error
+assert(true == false, "error true not false"); // error
+```
