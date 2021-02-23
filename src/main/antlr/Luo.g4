@@ -72,3 +72,27 @@ Digit:  [0-9];
 Semicolon: ';';
 Identifier: (Underscore|Letter)(Underscore|Letter|Digit)*;
 WS: [ \t\r\n]+ -> skip;
+
+IntList: '{' (Integer ',')* Integer '}';
+
+IdentifierStr: '"' (Underscore|Letter|Digit)+ '"';
+Dico: 'dico';
+Rec: 'rec';
+Comma: ',';
+
+OpenBracket: '{';
+ClosedBracket: '}';
+OpenSquareBracket: '[';
+ClosedSquareBracket: ']';
+EqualSymbol: '=';
+
+type_expression:
+    Rec Identifier OpenBracket (declaration)*  ClosedBracket Semicolon
+    | type_definition OpenSquareBracket ClosedSquareBracket Identifier EqualSymbol IntList Semicolon
+    | type_definition OpenSquareBracket  Integer ClosedSquareBracket Identifier Semicolon
+    | type_definition'*'type_definition Dico Identifier Semicolon
+    | type_definition'*'type_definition Dico Identifier EqualSymbol OpenBracket (OpenedParenthesis IdentifierStr Comma
+    Identifier ClosedParenthesis)*
+    (Comma OpenedParenthesis IdentifierStr Comma Identifier ClosedParenthesis )* ClosedBracket Semicolon
+    ;
+
