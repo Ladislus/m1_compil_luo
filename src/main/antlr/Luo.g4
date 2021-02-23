@@ -14,7 +14,22 @@ grammar Luo;
 // DO NOT introduce a new non-terminal without discussing it with the whole class.
 
 // TO MODIFY:
-program: EOF;
+program: (instruction ';')* EOF                                                         #Program
+        ;
+
+instruction :
+
+        'if' '(' expression ')' instruction
+        ('elseif' '(' expression ')' instruction)*
+        ('else' '(' expression ')' instruction)?                                        #If
+    |   'foreach' '(' type_expression Identifier ':' expression ')' instruction         #Foreach
+    |   'for' '(' declaration ';' expression ';' expression ')' instruction             #For
+    |   'while' '(' expression ')' instruction                                           #While
+    |   'do' instruction 'while' '(' expression ')'                                     #Dowhile
+    |   expression                                                                      #Expression
+    |   '{' (declaration)* (instruction)* '}'                                           #Bloc
+    ;
+
 
 expression : expression op=(Multiplication | Division | Modulo) expression                                                                  #MulDivMod
     | expression op=(Plus | Minus) expression                                                                                               #AddSub
