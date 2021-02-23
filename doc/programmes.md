@@ -23,18 +23,26 @@ int main((char array) array args) {
 &nbsp;
 ## Variables globales
 
-On peut déclarer et utiliser  des variables globales. Elles sont  visibles dans l'ensemble du programme principal 
-et elles sont écrites juste avant le programme principal. La déclaration se fait comme un variable standard, 
+On peut déclarer et utiliser des variables globales. Elles sont visibles dans tous les fichiers luo si la visibilité est en publique.
+Sinon, elle seront visibles que dans le fichier si la visibilité est privée. 
+Elles sont écrites juste avant le programme principal. La déclaration se fait comme un variable standard, 
 sauf qu’on va ajouter le mot **static** devant. Les types sont int, bool, char, array, dico, rec. 
 
 
 **Notations :**
 ```
-static type maVarGlabal = value ;
-static type maVarGlabal;  
-maVarGlabal  = newValue;
+visibility static type maVarGlabal = value ;
+visibility static type maVarGlabal;  
 ```
 
+**Exemples :**
+
+```
+public static int PI = 3.14; // Déclarer une variable statique en publique
+private static USER = "LUO"; // Déclarer une variable statique en privée
+public static STATE; // Déclarer une variable globale dans valeur
+USER = "LUO2"; // Assigner une valeur à une variable globale
+```
 
 &nbsp;
 ## Découpage du programme
@@ -55,6 +63,13 @@ import  “../rep1/nomFichier”
 import  “nomFichier”
 ```
 
+**Exemples :**
+```
+import ./ast/type;
+import /home/luo/ast/type;
+import ../shape/square;
+import math;
+```
 
 &nbsp;
 ## Commentaires
