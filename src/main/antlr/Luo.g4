@@ -22,11 +22,11 @@ expression : expression op=(Multiplication | Division | Modulo) expression      
     | Negation expression                                                                                                                   #Not
     | Minus expression                                                                                                                      #Opposite
     | OpenedParenthesis expression ClosedParenthesis                                                                                        #Parenthesis
-    | Identifier                                                                                                                            #Identifier
     | Integer                                                                                                                               #Integer
     | Character                                                                                                                             #Character
     | String                                                                                                                                #String
     | Boolean                                                                                                                               #Boolean
+    | Identifier                                                                                                                            #Identifier
     ;
 // Some lexer rules.
 // Additional rules are needed for all the keywords and reserved symbols.
@@ -56,16 +56,19 @@ ClosedParenthesis: ')';
 LogicalOr: '||';
 LogicalAnd: '&&';
 Underscore : '_';
-Escape: '\\';
 Letter: [a-zA-Z];
-Space: ' ';
 SimpleQuote: '\'';
 DoubleQuote: '"';
+Boolean: True | False;
 True: 'true';
 False: 'false';
-Character: SimpleQuote ~['] SimpleQuote;
+Escape: '\\';
+NewLine: Escape 'n';
+Tabulation: Escape 't';
+Character: SimpleQuote (NewLine | Tabulation | ~[']) SimpleQuote;
 String: DoubleQuote ~["]* DoubleQuote;
-Digit:  [0-9];
-Boolean: True | False;
-Identifier: (Underscore|Letter)(Underscore|Letter|Digit)*;
 Integer: (Minus)?Digit+;
+Digit:  [0-9];
+Semicolon: ';';
+Identifier: (Underscore|Letter)(Underscore|Letter|Digit)*;
+WS: [ \t\r\n]+ -> skip;
