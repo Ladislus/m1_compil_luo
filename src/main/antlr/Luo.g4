@@ -15,8 +15,8 @@ grammar Luo;
 
 // TO MODIFY:
 program:
-   (imports)*
-   (global_declaration|type_definition|function_definition)*
+ //  (imports)*
+ //  (global_declaration|type_definition|function_definition)*
    (instruction ';')*
     EOF
    ;
@@ -26,25 +26,37 @@ global_declaration:
        ;
 
 declaration:
-          type_expression Identifier EqualSymbol expression      #Initialize
-       |  type_expression Identifier                              #Declare
+          type_expression Identifier EqualSymbol expression      #LocalDeclarationInit
+       |  type_expression Identifier                             #LocalDeclaration
        ;
 
 instruction :
-
+    // Tous les mots-clés sont à définir en tant que lexèmes, et pour tous
+    // les symboles il faut utiliser les lexèmes déjà définis, c'est fait pour #Block
+    // à titre d'exemple. À faire partout.
+    // Il manque : l'affectation, return, break
         'if' '(' expression ')' instruction
         ('elseif' '(' expression ')' instruction)*
         ('else' '(' expression ')' instruction)?                                        #If
     |   'foreach' '(' type_expression Identifier ':' expression ')' instruction         #Foreach
     |   'for' '(' declaration ';' expression ';' expression ')' instruction             #For
-    |   'while' '(' expression ')' instruction                                           #While
+    |   'while' '(' expression ')' instruction                                          #While
     |   'do' instruction 'while' '(' expression ')'                                     #Dowhile
-    |   expression                                                                      #Expression
-    |   '{' (declaration)* (instruction)* '}'                                           #Bloc
+    |   expression                                                                      #InsExpression
+    |   OpenBracket (declaration)* (instruction)* ClosedBracket                         #Block
     ;
 
-expression : expression op=(Multiplication | Division | Modulo) expression                                                                  #MulDivMod
+expression :
+    // Où sont les appels de fonctions ?
+      expression op=(Multiplication | Division | Modulo) expression                                                                  #MulDivMod
     | expression op=(Plus | Minus) expression                                                                                               #AddSub
+    // LogicalOr et LogicalAnd ne sont pas des comparaisons
+    // Il y a des priorités différentes pour || et &&
+    // Il faut aussi penser aux priorités entre les opérations entières et booléenne, et ces opérations et les comparaisons.
+    // Par exemple, 1+2<3 est dans la plupart des langages interprété comme (1+2) < 3
+    // De même false < true && 2 < 3 est interprété comme (false < true) && (2 < 3)
+    // Enfin x || y && z est interprété comme x || (y && z)
+    // La grammaire actuelle ne traitent pas correctement tous ces cas.
     | expression op=(GreaterThan | GreaterOrEqual | LesserThan | LesserOrEqual | Different | Equal | LogicalAnd | LogicalOr) expression     #Comparison
     | Negation expression                                                                                                                   #Not
     | Minus expression                                                                                                                      #Opposite
@@ -56,15 +68,40 @@ expression : expression op=(Multiplication | Division | Modulo) expression      
     | Identifier                                                                                                                            #Identifier
     ;
 
+type_definition : Rec // À compléter
+                ;
+
 type_expression:
-    Rec Identifier OpenBracket (declaration)*  ClosedBracket Semicolon
-    | type_definition OpenSquareBracket ClosedSquareBracket Identifier EqualSymbol IntList Semicolon
-    | type_definition OpenSquareBracket  Integer ClosedSquareBracket Identifier Semicolon
-    | type_definition'*'type_definition Dico Identifier Semicolon
-    | type_definition'*'type_definition Dico Identifier EqualSymbol OpenBracket (OpenedParenthesis IdentifierStr Comma
-    Identifier ClosedParenthesis)*
-    (Comma OpenedParenthesis IdentifierStr Comma Identifier ClosedParenthesis )* ClosedBracket Semicolon
+// À revoir complètement. Les expressions de types sont :
+// 1. les types prédéfinis: int, bool, char
+// 2. les types tableaux, par exemple int array, char array, (char array) array
+// 3. les types dictonnaires
+// 4. les noms de types définis par l'utilisateur (donc des identifiants).
+//
+// L'utilisation basique des expressions de types : donner un type à une variable dans:
+// - les déclarations locales, exemples: int x, mon_type tmp
+// - les déclarations globales, exemple: public static int array Stack
+// - les paramètres de fonctions, exemple void f(int array t)
+// - les déclarations des boucles for (initialisation possible) et des boucles foreach (pas d'initialisation possible)
+//
+// Attention on ne peut pas utiliser '*' pour les types dictionnaires, car nous avons décidé de NE PAS avoir les types tuples.
+// Du coup, ça pose un problème pour l'instruction foreach, car elle doit être de la forme:
+// foreach(int x : t) où int array t
+// Dans le cas où t est un type dictionnaire, par exemple (char * int) dico si on prend
+// la proposition de syntaxe (qui n'est pas bonne), le type de x serait char * int.
+// Mais on n'a pas les types tuples, donc pas char * int.
+// Comment faire ?
+// Utiliser map plutôt que dico.
+    Rec Identifier OpenBracket (declaration)*  ClosedBracket Semicolon // Qu'est ce que ça représente comme type ?
+    | type_definition OpenSquareBracket ClosedSquareBracket Identifier EqualSymbol IntList Semicolon // Idem ?
+    | type_definition OpenSquareBracket  Integer ClosedSquareBracket Identifier Semicolon // Pas de nombres dans les types !
+    | type_definition Multiplication type_definition Dico Identifier Semicolon // pas de ; dans les types
     ;
+// Ceci est une définition de type, pas une expression de type
+//    | type_definition'*'type_definition Dico Identifier EqualSymbol OpenBracket (OpenedParenthesis IdentifierStr Comma
+//    Identifier ClosedParenthesis)*
+//    (Comma OpenedParenthesis IdentifierStr Comma Identifier ClosedParenthesis )* ClosedBracket Semicolon
+
 
 // Some lexer rules.
 // Additional rules are needed for all the keywords and reserved symbols.
@@ -107,8 +144,6 @@ String: DoubleQuote ~["]* DoubleQuote;
 Integer: (Minus)?Digit+;
 Digit:  [0-9];
 Semicolon: ';';
-IntList: '{' (Integer ',')* Integer '}';
-IdentifierStr: '"' (Underscore|Letter|Digit)+ '"';
 Dico: 'dico';
 Rec: 'rec';
 Comma: ',';
