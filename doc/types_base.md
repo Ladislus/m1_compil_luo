@@ -5,7 +5,7 @@
 Pour attribuer un type à une variable, la syntaxe est la suivante :
 `**type** nomvar [ = **expr** ];`
 
-par exemple, afin de déclarer et attribuer 5 à une variable nommée *dromadaire*, de type entier, l'on procède comme suit :
+par exemple, afin de déclarer et attribuer 5 à une variable nommée *dromadaire*, de type entier, l'on procède comme suit :  
 `int dromadaire = 5;`
 
 ## Types
@@ -27,14 +27,31 @@ Les différents opérateurs applicables sur les types *int* sont :
   - Modulo (%).
   - Comparaisons (==, !=, <, <=, >, >=) : Les comparaisons sont faites par rapport à l'ordre numérique.
 
+Exemples:  
+```LUO
+int i;                          // Déclaration
+int j = 10 + 10;                // Déclaration avec initialisation
+j = -j;                         // Opposé
+int x = 10 % 10;                // Opérateurs binaires
+bool b = 10 >= 100;             // Comparaisons
+```
+
 # Caractères
 Les caractères sont désignés par le mot clef `char` au sein du langage Luo. Ces caractères sont représentés en mémoire sur 1 octet.
 Les caractères sont représentés grâce à des simples quotes `'`.
 
 Les différents opérateurs applicables sur les types *char* sont :
 - Opérateurs binaires :
-  - Concaténation (+) : retourne une string (tableau de *char*).
   - Comparaisons (==, !=, <, <=, >, >=) : Les comparaisons sont faites par rapport à l'ordre alphanumérique.
+
+Exemples:
+```LUO
+char x;                 // Déclaration
+char y = 'y';           // Déclaration avec initialisation
+bool a = 'a' > 'b';     // Comparaisons
+bool b = 'a' == 'b';    // Comparaisons
+bool c = 'a' != 'b';    // Comparaisons
+```
 
 De plus, le caractère `\` est le caractère d'échappement.
 
@@ -51,3 +68,11 @@ Les différents opérateurs applicables sur les types *bool* sont :
 - Opérateurs binaires :
   - Comparaisons (==, !=)
   - Opérations logiques (&&,  ||) : AND et OR
+
+Exemples:
+```LUO
+bool a = true;              // Déclaration avec initialisation
+bool b = false;             // Déclaration avec initialisation
+bool c;                     // Déclaration
+bool d = true == (a && b);  // Déclaration avec initialisation par comparaison
+```
