@@ -30,7 +30,6 @@ instruction :
     |   '{' (declaration)* (instruction)* '}'                                           #Bloc
     ;
 
-
 expression : expression op=(Multiplication | Division | Modulo) expression                                                                  #MulDivMod
     | expression op=(Plus | Minus) expression                                                                                               #AddSub
     | expression op=(GreaterThan | GreaterOrEqual | LesserThan | LesserOrEqual | Different | Equal | LogicalAnd | LogicalOr) expression     #Comparison
