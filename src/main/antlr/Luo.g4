@@ -14,7 +14,20 @@ grammar Luo;
 // DO NOT introduce a new non-terminal without discussing it with the whole class.
 
 // TO MODIFY:
-program: EOF;
+program:
+   (imports)*
+   (global_declaration|type_definition|function_definition)*
+    EOF
+   ;
+
+global_declaration:
+       (Public|Private)? Static declaration
+       ;
+
+declaration:
+          type_expression Identifier EqualSymbol expression      #Initialize
+       |  type_expression Identifier                              #Declare
+       ;
 
 expression : expression op=(Multiplication | Division | Modulo) expression                                                                  #MulDivMod
     | expression op=(Plus | Minus) expression                                                                                               #AddSub
