@@ -14,8 +14,21 @@ grammar Luo;
 // DO NOT introduce a new non-terminal without discussing it with the whole class.
 
 // TO MODIFY:
-program: (instruction ';')* EOF                                                         #Program
-        ;
+program:
+   (imports)*
+   (global_declaration|type_definition|function_definition)*
+   (instruction ';')*
+    EOF
+   ;
+
+global_declaration:
+       (Public|Private)? Static declaration
+       ;
+
+declaration:
+          type_expression Identifier EqualSymbol expression      #Initialize
+       |  type_expression Identifier                              #Declare
+       ;
 
 instruction :
 
