@@ -65,10 +65,10 @@ import  “nomFichier”
 
 **Exemples :**
 ```
-import ./ast/type;
-import /home/luo/ast/type;
-import ../shape/square;
-import math;
+import "./ast/type";
+import "/home/luo/ast/type";
+import "../shape/square";
+import "math";
 ```
 
 &nbsp;
