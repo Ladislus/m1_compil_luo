@@ -71,7 +71,7 @@ actual_parameter_list:
       ((expression Comma)* expression)?
       ;
 
-type_definition : Rec type_expression OpenBracket (type_expression Identifier Semicolon)* ClosedBracket;
+type_definition : Rec type_expression OpenBracket (type_expression Identifier Semicolon)* ClosedBracket Semicolon;
 
 type_expression:
     (IntegerType|BooleanType|CharType)
@@ -89,9 +89,12 @@ visibilite : Public
 argument_list : (Identifier type_expression (Colon expression)?)
     | ((Identifier type_expression (Colon expression)?) Comma)* (Identifier type_expression (Colon expression)?);
 
-imports : Import DoubleQuote ((Root|Division|'../')? Identifier (Division)? ) DoubleQuote
-    | Import DoubleQuote ((Root|Division|'../')? Identifier (Division)? ) ((Division|'../')? Identifier (Division)? ) DoubleQuote;
+imports :  Import DoubleQuote (repertoire*)? Identifier DoubleQuote;
 
+repertoire : Root
+    |   Identifier Division
+    |   Parent
+    |   Division;
 
 // Some lexer rules.
 // Additional rules are needed for all the keywords and reserved symbols.
