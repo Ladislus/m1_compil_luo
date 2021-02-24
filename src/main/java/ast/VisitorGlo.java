@@ -1,2 +1,4 @@
-package ast;public class VisitorGlo {
+package ast;
+
+public class VisitorGlo {
 }

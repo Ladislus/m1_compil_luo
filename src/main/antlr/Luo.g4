@@ -15,8 +15,8 @@ grammar Luo;
 
 // TO MODIFY:
 program:
- //  (imports)*
- //  (global_declaration|type_definition|function_definition)*
+   (imports)*
+   (global_declaration|type_definition|function_definition)*
    (instruction ';')*
     EOF
    ;
