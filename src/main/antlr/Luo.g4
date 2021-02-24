@@ -74,35 +74,11 @@ actual_parameter_list:
 type_definition : Rec type_expression OpenBracket (type_expression Identifier Semicolon)* ClosedBracket;
 
 type_expression:
-// À revoir complètement. Les expressions de types sont :
-// 1. les types prédéfinis: int, bool, char
-// 2. les types tableaux, par exemple int array, char array, (char array) array
-// 3. les types dictonnaires
-// 4. les noms de types définis par l'utilisateur (donc des identifiants).
-//
-// L'utilisation basique des expressions de types : donner un type à une variable dans:
-// - les déclarations locales, exemples: int x, mon_type tmp
-// - les déclarations globales, exemple: public static int array Stack
-// - les paramètres de fonctions, exemple void f(int array t)
-// - les déclarations des boucles for (initialisation possible) et des boucles foreach (pas d'initialisation possible)
-//
-// Attention on ne peut pas utiliser '*' pour les types dictionnaires, car nous avons décidé de NE PAS avoir les types tuples.
-// Du coup, ça pose un problème pour l'instruction foreach, car elle doit être de la forme:
-// foreach(int x : t) où int array t
-// Dans le cas où t est un type dictionnaire, par exemple (char * int) dico si on prend
-// la proposition de syntaxe (qui n'est pas bonne), le type de x serait char * int.
-// Mais on n'a pas les types tuples, donc pas char * int.
-// Comment faire ?
-// Utiliser map plutôt que dico.
-    Rec Identifier OpenBracket (declaration)*  ClosedBracket Semicolon // Qu'est ce que ça représente comme type ?
-    | type_definition OpenSquareBracket ClosedSquareBracket Identifier EqualSymbol IntList Semicolon // Idem ?
-    | type_definition OpenSquareBracket  Integer ClosedSquareBracket Identifier Semicolon // Pas de nombres dans les types !
-    | type_definition Multiplication type_definition Dico Identifier Semicolon // pas de ; dans les types
+    (IntegerType|BooleanType|CharType)
+    |type_expression Array
+    |Identifier Map
+    |Identifier
     ;
-// Ceci est une définition de type, pas une expression de type
-//    | type_definition'*'type_definition Dico Identifier EqualSymbol OpenBracket (OpenedParenthesis IdentifierStr Comma
-//    Identifier ClosedParenthesis)*
-//    (Comma OpenedParenthesis IdentifierStr Comma Identifier ClosedParenthesis )* ClosedBracket Semicolon
 
 function_definition : visibilite type_expression Identifier OpenedParenthesis argument_list? ClosedParenthesis OpenBracket (instruction*)? Return expression ClosedBracket
     | visibilite Void Identifier OpenedParenthesis argument_list? ClosedParenthesis OpenBracket (instruction*)? Return expression ClosedBracket;
@@ -161,7 +137,7 @@ String: DoubleQuote ~["]* DoubleQuote;
 Integer: (Minus)?Digit+;
 Digit:  [0-9];
 Semicolon: ';';
-Dico: 'dico';
+Map: 'map';
 Rec: 'rec';
 Comma: ',';
 Dot: '.';
@@ -170,11 +146,19 @@ ClosedBracket: '}';
 OpenSquareBracket: '[';
 ClosedSquareBracket: ']';
 EqualSymbol: '=';
+IntegerType: 'int';
+BooleanType: 'bool';
+CharType: 'char';
+Array: 'array';
+Identifier: (Underscore|Letter)(Underscore|Letter|Digit)*;
+Letter: [a-zA-Z];
+WS: [ \t\r\n]+ -> skip;
 Import:'import';
 Return:'return';
 Colon:':';
 Root:'./';
 Parent:'../';
-Identifier: (Underscore|Letter)(Underscore|Letter|Digit)*;
-Letter: [a-zA-Z];
-WS: [ \t\r\n]+ -> skip;
+
+
+
+
