@@ -15,14 +15,14 @@ grammar Luo;
 
 // TO MODIFY:
 program:
- //  (imports)*
- //  (global_declaration|type_definition|function_definition)*
-   (instruction ';')*
+   (imports)*
+   (global_declaration|type_definition|function_definition)*
     EOF
    ;
 
+
 global_declaration:
-       (Public|Private)? Static declaration
+       visibilite? Static declaration
        ;
 
 declaration:
