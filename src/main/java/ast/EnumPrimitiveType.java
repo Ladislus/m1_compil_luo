@@ -1,6 +1,6 @@
 package ast;
 
-public enum EnumType {
+public enum EnumPrimitiveType {
     INT {
         public String toString() {
             return "int";
@@ -14,11 +14,6 @@ public enum EnumType {
     BOOL {
         public String toString() {
             return "bool";
-        }
-    },
-    ARRAY {
-        public String toString() {
-            return "array";
         }
     }
 }

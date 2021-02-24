@@ -1,14 +1,27 @@
 package ast;
 
-public class TypRecord extends Type{
-    private final String structName;
+import java.util.ArrayList;
+import java.util.List;
 
-    public String getType(){ return structName; }
-    public TypRecord(String structName){
-        this.structName = structName;
+public class TypRecord extends Type {
+    private String name;
+    private List<Type> attributeTypes;
+
+    public TypRecord(String name, List<Type> attributeTypes) {
+        this.name = name;
+        this.attributeTypes = new ArrayList<>(attributeTypes);
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<Type> getAttributeTypes() {
+        return attributeTypes;
+    }
+
     @Override
-    <T> T accept(Visitor<T> visitor) {
+    public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
     }
 }

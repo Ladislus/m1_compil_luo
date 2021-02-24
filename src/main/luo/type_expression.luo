@@ -1,0 +1,30 @@
+import "chemin/vers/UnFichier"
+import "../chemin/vers/UnAutreFichier"
+
+public static int INT_CONST = 43;
+public static char C_CONST = 'a';
+
+Rec TStruct {
+    char array a[8];
+    int c;
+};
+
+static int array fnc_arr(int i, char c, char array a){
+    int j;
+    TStruct map monDico = {("maCle1", 1),(“maClé2”,2)};
+
+    if( i < 0 ) j = 3;
+    else j = 2;
+
+    for( ; j < INT_CONST; j++){
+        if( a[j] == c )
+           return i * 5;
+        else if( i == 0 )
+           return 0;
+
+        i = i % 2;
+    }
+     return -1;
+}
+
+
