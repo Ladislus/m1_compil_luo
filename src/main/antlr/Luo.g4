@@ -47,26 +47,29 @@ instruction :
     ;
 
 expression :
-    // Où sont les appels de fonctions ?
-      expression op=(Multiplication | Division | Modulo) expression                                                                  #MulDivMod
+      Identifier OpenedParenthesis actual_parameter_list? ClosedParenthesis                                                                 #FunctionCall
+    | expression OpenSquareBracket expression ClosedSquareBracket                                                                           #AccessTabDico
+    | expression Dot Identifier                                                                                                             #AccessRec
+    | OpenedParenthesis expression ClosedParenthesis                                                                                        #Parenthesis
+    | (PlusPlus | MinusMinus) expression                                                                                                    #Increment
+    | expression (PlusPlus | MinusMinus)                                                                                                    #Decrement
+    | expression op=(Multiplication | Division | Modulo) expression                                                                         #MulDivMod
     | expression op=(Plus | Minus) expression                                                                                               #AddSub
-    // LogicalOr et LogicalAnd ne sont pas des comparaisons
-    // Il y a des priorités différentes pour || et &&
-    // Il faut aussi penser aux priorités entre les opérations entières et booléenne, et ces opérations et les comparaisons.
-    // Par exemple, 1+2<3 est dans la plupart des langages interprété comme (1+2) < 3
-    // De même false < true && 2 < 3 est interprété comme (false < true) && (2 < 3)
-    // Enfin x || y && z est interprété comme x || (y && z)
-    // La grammaire actuelle ne traitent pas correctement tous ces cas.
-    | expression op=(GreaterThan | GreaterOrEqual | LesserThan | LesserOrEqual | Different | Equal | LogicalAnd | LogicalOr) expression     #Comparison
+    | expression op=(GreaterThan | GreaterOrEqual | LesserThan | LesserOrEqual | Different | Equal ) expression                             #Comparison
+    | expression LogicalAnd expression                                                                                                      #And
+    | expression LogicalOr expression                                                                                                       #Or
     | Negation expression                                                                                                                   #Not
     | Minus expression                                                                                                                      #Opposite
-    | OpenedParenthesis expression ClosedParenthesis                                                                                        #Parenthesis
     | Integer                                                                                                                               #Integer
     | Character                                                                                                                             #Character
     | String                                                                                                                                #String
     | Boolean                                                                                                                               #Boolean
     | Identifier                                                                                                                            #Identifier
     ;
+
+actual_parameter_list:
+      ((expression Comma)* expression)?
+      ;
 
 type_definition : Rec type_expression OpenBracket (type_expression Identifier Semicolon)* ClosedBracket;
 
@@ -128,6 +131,8 @@ Private: 'private';
 Void:'void';
 Minus: '-';
 Plus: '+';
+PlusPlus: '++';
+MinusMinus: '--';
 Multiplication: '*';
 Division: '/';
 Modulo: '%';
@@ -159,16 +164,17 @@ Semicolon: ';';
 Dico: 'dico';
 Rec: 'rec';
 Comma: ',';
+Dot: '.';
 OpenBracket: '{';
 ClosedBracket: '}';
 OpenSquareBracket: '[';
 ClosedSquareBracket: ']';
 EqualSymbol: '=';
-Identifier: (Underscore|Letter)(Underscore|Letter|Digit)*;
-Letter: [a-zA-Z];
-WS: [ \t\r\n]+ -> skip;
 Import:'import';
 Return:'return';
 Colon:':';
 Root:'./';
 Parent:'../';
+Identifier: (Underscore|Letter)(Underscore|Letter|Digit)*;
+Letter: [a-zA-Z];
+WS: [ \t\r\n]+ -> skip;
