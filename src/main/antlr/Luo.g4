@@ -153,14 +153,17 @@ IntegerType: 'int';
 BooleanType: 'bool';
 CharType: 'char';
 Array: 'array';
-Identifier: (Underscore|Letter)(Underscore|Letter|Digit)*;
-Letter: [a-zA-Z];
-WS: [ \t\r\n]+ -> skip;
 Import:'import';
 Return:'return';
 Colon:':';
 Root:'./';
 Parent:'../';
+
+//*******************************************************
+//* Don't write anything below these 3 lines
+Identifier: (Underscore|Letter)(Underscore|Letter|Digit)*;
+Letter: [a-zA-Z];
+WS: [ \t\r\n]+ -> skip;
 
 
 
