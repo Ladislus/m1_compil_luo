@@ -68,7 +68,7 @@ expression :
     ;
 
 actual_parameter_list:
-      ((expression Comma)* expression)*
+      ((expression Comma)* expression)?
       ;
 
 type_definition : Rec type_expression OpenBracket (type_expression Identifier Semicolon)* ClosedBracket;
