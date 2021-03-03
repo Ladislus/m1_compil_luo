@@ -60,3 +60,15 @@ Exemple:
 ```
 foreach( Type var : Collection_Var){...}
 ```
+
+### 4.6 Print multiples
+
+
+Pour afficher plusieurs valeurs dans un print (cf. fonctions prédéfinies), il faut une version instruction. Il peut prendre des valeurs de type **char**, **char array**, **int** ou **bool**.
+Cela permettra de mettre plusieurs valeurs de types différents dans un seul affichage.
+Exemples :
+
+```
+print("Luo version", 1);
+print("Number ", 1, " compiler !")
+```  
