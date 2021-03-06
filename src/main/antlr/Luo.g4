@@ -51,8 +51,8 @@ expression :
     | expression OpenSquareBracket expression ClosedSquareBracket                                                                           #AccessTabDico
     | expression Dot Identifier                                                                                                             #AccessRec
     | OpenedParenthesis expression ClosedParenthesis                                                                                        #Parenthesis
-    | (PlusPlus | MinusMinus) expression                                                                                                    #Increment
-    | expression (PlusPlus | MinusMinus)                                                                                                    #Decrement
+    | (PlusPlus | MinusMinus) expression                                                                                                    #PreUnary
+    | expression (PlusPlus | MinusMinus)                                                                                                    #PostUnary
     | expression op=(Multiplication | Division | Modulo) expression                                                                         #MulDivMod
     | expression op=(Plus | Minus) expression                                                                                               #AddSub
     | expression op=(GreaterThan | GreaterOrEqual | LesserThan | LesserOrEqual | Different | Equal ) expression                             #Comparison
