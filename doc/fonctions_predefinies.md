@@ -8,10 +8,10 @@ Le type de la valeur saisie peut être choisi lors de l'affectation : un caract�
 **Notations :**
 
 ```
-char input()
-char array input()
-int input()
-bool input()
+char inputChar()
+char array inputString()
+int inputInt()
+bool inputBool()
 ```
 
 **Exemples :**  
@@ -43,49 +43,24 @@ void print(bool msg)
 ```
 print("Hello world!");
 print(35);
-```  
-
-
-Il y a aussi la possibilité d’afficher plusieurs messages dans un print 
-avec un type T qui est de type char, char array, int ou bool.
-
-
-**Notation :**
-
-    void print(T msgs . . .)
-
-**Exemples :**
-
 ```
-print("Luo version", 1);
-print("Number ", 1, " compiler !")
-```  
 
 
 &nbsp;
 ## Fonctions de conversion
 
 Il y a possiblité de changer le type d’une valeur, plusieurs fonctions prédéfinies de conversion sont disponibles 
-pour modifier les types char, char array, int et bool.
+pour modifier les types char, int et bool.
 
 **Notations :**  
 
 Convertir en char :
 ```Convertir en char :
-char toChar(char array value)
 char toChar(int value)
-char toChar(bool value)
-```
-Convertir en char array :
-```
-char array toString(char value)
-char array toString(int value)
-char array toString(bool value)
 ```
 Convertir en int :
 ```
 int toInt(char value)
-int toInt(char array value)
 int toInt(bool value)
 ```
 Convertir en bool :
@@ -97,8 +72,7 @@ bool toBool(int value)
 
 ```
 char A = toChar(41); // A = 'A'
-char array string = toString(41); // string = "41"
-int number = toInt("41"); // number = 41
+int number = toInt('1'); // number = 49
 bool boolean = toBool(1); // boolean = true
 ```  
 

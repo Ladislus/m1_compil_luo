@@ -26,7 +26,7 @@ int main((char array) array args) {
 On peut déclarer et utiliser des variables globales. Elles sont visibles dans tous les fichiers luo si la visibilité est en publique.
 Sinon, elle seront visibles que dans le fichier si la visibilité est privée. 
 Elles sont écrites juste avant le programme principal. La déclaration se fait comme un variable standard, 
-sauf qu’on va ajouter le mot **static** devant. Les types sont int, bool, char, array, dico, rec. 
+sauf qu’on va ajouter le mot **static** devant. Les types sont int, bool, char, array, dico, rec. Par défaut, la visibilité est **public**. Les définitions de type enregistrement se fait qu’au niveau global.
 
 
 **Notations :**
@@ -52,7 +52,7 @@ des procédures et des variables globales. Les fichiers importés ne peuvent pas
 Pour importer un fichier, il faut écrire **import** et le chemin du fichier au début du programme.
 Le chemin du fichier est un chemin relatif ou absolu. Chaque répertoire est séparé par **/** . 
 Le **./** signifie qu’on désigne  le chemin dans le répertoire courant.  
-Le **../**  signifie qu’on désigne le chemin du répertoire parent.
+Le **../**  signifie qu’on désigne le chemin du répertoire parent. En cas de collision de nom sur les variables globales ou les références, on prendra la dernière.
 
 
 **Notations :**
