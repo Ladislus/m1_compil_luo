@@ -2,14 +2,14 @@ package ast;
 
 public class TypPrimitive extends Type {
 
-    private String name;
+    private EnumPrimitiveType type;
 
     public TypPrimitive(EnumPrimitiveType primitiveType) {
-        this.name = primitiveType.name();
+        this.type = primitiveType;
     }
 
-    public String getName() {
-        return name;
+    public EnumPrimitiveType getType() {
+        return type;
     }
 
     @Override
