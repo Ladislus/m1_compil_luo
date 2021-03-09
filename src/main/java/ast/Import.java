@@ -11,5 +11,5 @@ public class Import extends Node{
     public String getPath() { return path; }
 
     @Override
-    <T> T accept(Visitor<T> visitor) { return null; }
+    <T> T accept(Visitor<T> visitor) { return visitor.visit(this); }
 }

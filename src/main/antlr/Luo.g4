@@ -31,21 +31,21 @@ declaration:
        ;
 
 instruction :
-    // Tous les mots-clés sont à définir en tant que lexèmes, et pour tous
-    // les symboles il faut utiliser les lexèmes déjà définis, c'est fait pour #Block
-    // à titre d'exemple. À faire partout.
-    // Il manque : l'affectation, return, break
-        'if' '(' expression ')' instruction
-        ('elseif' '(' expression ')' instruction)*
-        ('else' '(' expression ')' instruction)?                                        #If
-    |   'foreach' '(' type_expression Identifier ':' expression ')' instruction         #Foreach
-    |   'for' '(' declaration ';' expression ';' expression ')' instruction             #For
-    |   'while' '(' expression ')' instruction                                          #While
-    |   'do' instruction 'while' '(' expression ')'                                     #Dowhile
-    |   expression                                                                      #InsExpression
-    |   OpenBracket (declaration)* (instruction)* ClosedBracket                         #Block
-    ;
-
+     // Tous les mots-clés sont à définir en tant que lexèmes, et pour tous
+        // Il manque : l'affectation, return, break
+            If OpenedParenthesis expression ClosedParenthesis instruction
+            (Elseif OpenedParenthesis expression ClosedParenthesis instruction)*
+            (Else OpenedParenthesis expression ClosedParenthesis instruction)?                                          #If
+        |   Foreach OpenedParenthesis type_expression Identifier Colon expression ClosedParenthesis instruction         #Foreach
+        |   For OpenedParenthesis declaration Semicolon expression Semicolon expression ClosedParenthesis instruction   #For
+        |   While OpenedParenthesis expression ClosedParenthesis instruction                                            #While
+        |   Do instruction While OpenedParenthesis expression ClosedParenthesis                                         #Dowhile
+        |   expression                                                                                                  #InsExpression
+        |   OpenBracket (declaration)* (instruction)* ClosedBracket                                                     #Block
+        |   Return expression                                                                                           #Return
+        |   Break                                                                                                       #Break
+        |   expression op=(MinusEqual|PlusEqual|MultEqual|DivEqual|EqualSymbol) expression                              #Affectation
+        ;
 expression :
       Identifier OpenedParenthesis actual_parameter_list? ClosedParenthesis                                                                 #FunctionCall
     | expression OpenSquareBracket expression ClosedSquareBracket                                                                           #AccessTabDico
@@ -108,6 +108,10 @@ Static: 'static';
 Public: 'public';
 Private: 'private';
 Void:'void';
+PlusEqual : '+=';
+MinusEqual : '-=';
+MultEqual : '*=';
+DivEqual : '/=';
 Minus: '-';
 Plus: '+';
 PlusPlus: '++';
@@ -149,6 +153,14 @@ ClosedBracket: '}';
 OpenSquareBracket: '[';
 ClosedSquareBracket: ']';
 EqualSymbol: '=';
+If : 'if';
+While : 'while';
+Foreach : 'foreach';
+Do : 'do';
+Else : 'else';
+Elseif : 'elseif';
+For : 'for';
+Break : 'break';
 IntegerType: 'int';
 BooleanType: 'bool';
 CharType: 'char';

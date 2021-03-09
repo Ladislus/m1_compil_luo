@@ -1,7 +1,5 @@
 package ast;
 
-import org.antlr.v4.codegen.model.decl.Decl;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,11 +20,12 @@ public class TypeDefinition extends Node{
         this.declarations = declarationList;
     }
 
+    
     public List<Declaration> getDeclarations() { return declarations; }
     public String getName(){ return this.name;}
 
     @Override
     <T> T accept(Visitor<T> visitor) {
-        return null;
+        return visitor.visit(this);
     }
 }
