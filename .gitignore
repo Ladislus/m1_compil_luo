@@ -1,1 +1,7 @@
 /src/main/java/parser/
+.idea
+.gradle
+gradle
+build
+gradlew
+gradlew.bat
