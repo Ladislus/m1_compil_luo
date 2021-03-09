@@ -1,11 +1,11 @@
 package ast;
 
-public class ExpRecord extends Expression {
+public class ExpRecordAccess extends Expression {
 
     private final Expression record;
     private final String field;
 
-    public ExpRecord(Expression record, String field) {
+    public ExpRecordAccess(Expression record, String field) {
         this.record = record;
         this.field = field;
     }

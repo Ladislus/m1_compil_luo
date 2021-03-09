@@ -4,7 +4,8 @@ public class ExpVariable extends Expression {
 
     private final String variable;
 
-    public ExpVariable(String variable) {
+    public ExpVariable(Position position, String variable) {
+        this.position = position;
         this.variable = variable;
     }
 

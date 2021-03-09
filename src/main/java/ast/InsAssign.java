@@ -1,12 +1,12 @@
 package ast;
 
-public class InsAffectation extends Instruction {
+public class InsAssign extends Instruction {
 
     private final Expression Expression1;
     private final Expression Expression2;
-    private final EnumEqualOp operation;
+    private final EnumAssignOp operation;
 
-    public InsAffectation(Expression expression1, Expression expression2, EnumEqualOp operation) {
+    public InsAssign(Expression expression1, Expression expression2, EnumAssignOp operation) {
         this.Expression1 = expression1;
         this.Expression2 = expression2;
         this.operation = operation;
@@ -20,7 +20,7 @@ public class InsAffectation extends Instruction {
         return this.Expression2;
     }
 
-    public EnumEqualOp getOperation() {
+    public EnumAssignOp getOperation() {
         return this.operation;
     }
 

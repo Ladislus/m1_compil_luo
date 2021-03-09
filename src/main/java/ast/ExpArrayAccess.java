@@ -1,11 +1,11 @@
 package ast;
 
-public class ExpArray extends Expression {
+public class ExpArrayAccess extends Expression {
 
     private final Expression array;
     private final Expression index;
 
-    public ExpArray(Expression array, Expression index) {
+    public ExpArrayAccess(Expression array, Expression index) {
         this.array = array;
         this.index = index;
     }

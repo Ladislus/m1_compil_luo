@@ -8,5 +8,11 @@ package ast;
     abstract syntax tree.
  */
 public abstract class Node {
+    protected Position position;
+
+    public Position getPosition() {
+        return position;
+    }
+
     abstract <T> T accept(Visitor<T> visitor);
 }

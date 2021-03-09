@@ -52,13 +52,13 @@ public class VisitorCopy<Node> implements Visitor<Node>{
     }
 
     @Override
-    public Node visit(ExpRecord record) {
-        return new ExpRecord(record.getRecord(), new String(record.getField())).getRecord().accept(this);
+    public Node visit(ExpRecordAccess record) {
+        return new ExpRecordAccess(record.getRecord(), new String(record.getField())).getRecord().accept(this);
     }
 
     @Override
-    public Node visit(ExpArray array) {
-        ExpArray na = new ExpArray(array.getArray(), array.getIndex());
+    public Node visit(ExpArrayAccess array) {
+        ExpArrayAccess na = new ExpArrayAccess(array.getArray(), array.getIndex());
         na.getArray().accept(this);
         return na.getIndex().accept(this);
     }
