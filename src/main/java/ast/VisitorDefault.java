@@ -18,11 +18,6 @@ public class VisitorDefault<T> implements Visitor<T> {
      * @author Martin GUERRAUD
      */
     @Override
-    public T visit(Expression expression) {
-        return this.defaultValue;
-    }
-
-    @Override
     public T visit(ExpPreUnaryOperation operation) {
         return operation.getExpression().accept(this);
     }
