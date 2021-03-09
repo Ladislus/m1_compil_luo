@@ -4,7 +4,8 @@
 
 On déclare une fonction en indiquant tout d'abord le type de retour, le nom de 
 la fonction, ensuite entre parenthèses se trouve les paramètres listés.
-On met ensuite, délimité par des crochets, le code de la fonction.
+On met ensuite, délimité par des crochets, le code de la fonction. Pour les fonctions
+ne devant pas retourner de valeur, on utilise le type de retour **void**. 
 
 Pour indiquer l'expression retournée, on utilise le mot-clé **return**.
 
@@ -62,9 +63,10 @@ public int addition(int a, int b){
 
 Pour définir des paramètres avec des valeurs par défaut à la fin de la liste des paramètres. On définit la valeur par défaut en ajoutant **:** suivi de la valeur.
 
-Pour l'appel des fonctions il faut préciser le nom de l'argument suivit de "**:**" suivit de sa valeur pour chaque paramètres. Si les paramètres ayant une valeur par défaut ne sont pas appelés, on leur affecte leur valeur par défaut.
-
-Avec la mention des noms des arguments dans l'appel, l'ordre des paramètres n'a pas à être respecté
+Pour l'appel des fonctions il faut respecter l'ordre des paramètres.
+Si les paramètres ayant une valeur par défaut ne sont pas appelés, on leur affecte leur valeur par défaut.
+C'est pour ça que les paramètres ayant recours à une valeur par
+défaut sont placés à la fin de la liste des paramètres.
 
 
 **Syntaxe :**
@@ -73,7 +75,7 @@ Avec la mention des noms des arguments dans l'appel, l'ordre des paramètres n'a
 ```
 **Exemple de déclaration :**
 ```
-public int addition(int a, int b:5){
+public int addition(int a:4, int b:5){
 
     return a+b;
 }
@@ -81,8 +83,9 @@ public int addition(int a, int b:5){
 
 **Exemple d'appel :**
 ```
-fonction(a:6);
-fonction(a:4, b:7);
+fonction();  //dans le corps de la fonction a vaudra 4 et b vaudra 5
+fonction(7);  //dans le corps de la fonction a vaudra 7 et b vaudra 5
+fonction(7,9);  //dans le corps de la fonction a vaudra 7 et b vaudra 9
 ```
 
 
