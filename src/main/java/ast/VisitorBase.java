@@ -14,11 +14,6 @@ public class VisitorBase<T> implements Visitor<T> {
      * @author Martin GUERRAUD
      */
     @Override
-    public T visit(Expression expression) {
-        return null;
-    }
-
-    @Override
     public T visit(ExpPreUnaryOperation operation) {
         return operation.getExpression().accept(this);
     }
