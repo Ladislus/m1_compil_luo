@@ -4,14 +4,14 @@ public interface VisitorExp<T> {
     T visit(ExpPreUnaryOperation operation);
     T visit(ExpPostUnaryOperation operation);
     T visit(ExpBinaryOperation operation);
-    T visit(ExpBoolean operation);
-    T visit(ExpCharacter operation);
-    T visit(ExpInteger operation);
+    T visit(ExpBoolean bool);
+    T visit(ExpCharacter character);
+    T visit(ExpInteger integer);
     T visit(ExpVariable variable);
     T visit(ExpRecord record);
     T visit(ExpArray array);
     T visit(ExpEnum enumeration);
     T visit(ExpTuple tuple);
     T visit(ExpFunctionCall function);
-    T visit(ExpString operation);
+    T visit(ExpString string);
 }

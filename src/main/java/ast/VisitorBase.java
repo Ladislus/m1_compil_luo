@@ -30,17 +30,17 @@ public class VisitorBase<T> implements Visitor<T> {
     }
 
     @Override
-    public T visit(ExpBoolean operation) {
+    public T visit(ExpBoolean bool) {
         return null;
     }
 
     @Override
-    public T visit(ExpCharacter operation) {
+    public T visit(ExpCharacter character) {
         return null;
     }
 
     @Override
-    public T visit(ExpInteger operation) {
+    public T visit(ExpInteger integer) {
         return null;
     }
 
@@ -81,11 +81,12 @@ public class VisitorBase<T> implements Visitor<T> {
     }
 
     @Override
-    public T visit(ExpString operation) {
+    public T visit(ExpString string) {
         return null;
     }
-
-
+    // ##############################
+    // #    Fin Block Expression    #
+    // ##############################
 
 
     /**
@@ -117,9 +118,4 @@ public class VisitorBase<T> implements Visitor<T> {
     public T visit(TypArray typArray) {
         return typArray.getType().accept(this);
     }
-    // ##############################
-    // #    Fin Block Expression    #
-    // ##############################
-
-
 }

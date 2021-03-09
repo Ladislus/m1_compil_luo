@@ -34,17 +34,17 @@ public class VisitorDefault<T> implements Visitor<T> {
     }
 
     @Override
-    public T visit(ExpBoolean operation) {
+    public T visit(ExpBoolean bool) {
         return this.defaultValue;
     }
 
     @Override
-    public T visit(ExpCharacter operation) {
+    public T visit(ExpCharacter character) {
         return this.defaultValue;
     }
 
     @Override
-    public T visit(ExpInteger operation) {
+    public T visit(ExpInteger integer) {
         return this.defaultValue;
     }
 
@@ -85,16 +85,12 @@ public class VisitorDefault<T> implements Visitor<T> {
     }
 
     @Override
-    public T visit(ExpString operation) {
+    public T visit(ExpString string) {
         return this.defaultValue;
     }
-
-
     // ##############################
     // #    Fin Block Expression    #
     // ##############################
-
-
 
 
     /**
