@@ -93,7 +93,41 @@ public class VisitorDefault<T> implements Visitor<T> {
     public T visit(ExpString operation) {
         return this.defaultValue;
     }
+
+
     // ##############################
     // #    Fin Block Expression    #
     // ##############################
+
+
+
+
+    /**
+     *Expression de types
+     * @author GUINDO Mouctar Ousseini
+     * @author GBOHO Thierry
+     * @author HEBRAS Jerome
+     * @author GUINGOUAIN Nicolas
+     *
+     *
+     */
+    @Override
+    public T visit(TypPrimitive typPrimitive) {
+        return defaultValue;
+    }
+
+    @Override
+    public T visit(TypDico typDictionary) {
+        return typDictionary.getType().accept(this);
+    }
+
+    @Override
+    public T visit(TypVariable typRecord) {
+        return defaultValue;
+    }
+
+    @Override
+    public T visit(TypArray typArray) {
+        return typArray.getType().accept(this);
+    }
 }
