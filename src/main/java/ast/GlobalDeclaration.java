@@ -26,4 +26,9 @@ public class GlobalDeclaration extends Declaration {
     public EnumVisibility getVisibility() {
         return visibility;
     }
+
+    @Override
+    <T> T accept(Visitor<T> visitor) {
+        return visitor.visit(this);
+    }
 }
