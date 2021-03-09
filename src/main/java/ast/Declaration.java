@@ -34,6 +34,6 @@ public class Declaration extends Node{
 
     @Override
     <T> T accept(Visitor<T> visitor) {
-        return null;
+        return visitor.visit(this);
     }
 }
