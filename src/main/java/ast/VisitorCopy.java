@@ -2,7 +2,7 @@ package ast;
 
 import java.util.ArrayList;
 
-public class VisitorCopy<Node> implements Visitor<Node>{
+public class VisitorCopy implements Visitor<Node>{
 
 
     // ##########################
