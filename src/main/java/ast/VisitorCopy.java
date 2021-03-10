@@ -1,6 +1,7 @@
 package ast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class VisitorCopy implements Visitor<Node>{
 
@@ -124,5 +125,81 @@ public class VisitorCopy implements Visitor<Node>{
         return new TypArray(typArray.getType()).getType().accept(this);
     }
 
+    // #################################################################################################
+    // # Bloc Definition de fonction, définition de type, imports, déclarations globales et programmes #
+    // #################################################################################################
+
+    /**
+     * @author  Nicolas ZHOU
+     * @author  Marion JURE
+     * @author  Mathis QUERAULT
+     * @author  Tristan LE SAUX
+     */
+
+    @Override
+    public Node visit(Function function) {
+        List<Declaration> declarations = new ArrayList<>();
+        for (Declaration declaration : function.getParameters()){
+            declarations.add((Declaration) declaration.accept(this));
+        }
+
+        List<Instruction> instructions = new ArrayList<>();
+        for (Instruction instruction : function.getInstructions()){
+            instructions.add((Instruction) instruction.accept(this));
+        }
+
+        Type type = (Type) function.getReturn_type().accept(this);
+
+        return  new Function(instructions,declarations,type,function.getVisibility());
+    }
+
+    @Override
+    public Node visit(TypeDefinition typeDefinition) {
+        List<Declaration> declarations = new ArrayList<>();;
+        for (Declaration declaration : typeDefinition.getDeclarations()){
+            declarations.add((Declaration) declaration.accept(this));
+        }
+        return  new TypeDefinition(new String(typeDefinition.getName()),declarations);
+    }
+
+    @Override
+    public Node visit(Import imports) {
+        return  new Import(new String(imports.getPath()));
+    }
+
+    @Override
+    public Node  visit(GlobalDeclaration globalDeclaration) {
+        Expression expression = (Expression) globalDeclaration.getExpression().get().accept(this);
+        Type type =(Type) globalDeclaration.getType().accept(this);
+        return new GlobalDeclaration(globalDeclaration.getVisibility(), type, new String(globalDeclaration.getVariable()), expression);
+    }
+
+    @Override
+    public Node visit(Program program){
+        List<Import> importList = new ArrayList<>();;
+        for (Import  my_import : program.getImports()){
+            importList.add((Import) my_import.accept(this));
+        }
+
+        List<GlobalDeclaration > globalDeclarationList = new ArrayList<>();;
+        for (GlobalDeclaration globalDeclaration : program.getGlobalDeclarations()){
+            globalDeclarationList.add((GlobalDeclaration) globalDeclaration.accept(this));
+        }
+
+        List<TypeDefinition> typeDefinitionList= new ArrayList<>();
+        for (TypeDefinition typeDefinition:program.getTypeDefinitions()){
+           typeDefinitionList.add((TypeDefinition) typeDefinition.accept(this));
+        }
+        List<Function> functionList = new ArrayList<>();
+        for (Function function:program.getFunctions()){
+            functionList.add((Function) function.accept(this));
+        }
+
+        return new Program(importList,globalDeclarationList,typeDefinitionList,functionList);
+    }
+
+    // #####################################################################################################
+    // # FIN Bloc Definition de fonction, définition de type, imports, déclarations globales et programmes #
+    // #####################################################################################################
 
 }
