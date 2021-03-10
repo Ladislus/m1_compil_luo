@@ -1,23 +1,23 @@
 package ast;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class InsIf extends Instruction{
 
     private final Expression condition;
     private final Instruction body;
-    private final ArrayList<PairEI> elseif;
+    private final List<PairEI> elseif;
     private final Optional<Instruction> bodyElse;
 
-    public InsIf(Expression condition, Instruction body, ArrayList<PairEI> elseif) {
+    public InsIf(Expression condition, Instruction body, List<PairEI> elseif) {
         this.condition = condition;
         this.body = body;
         this.elseif = elseif;
         this.bodyElse = Optional.empty();
     }
 
-    public InsIf(Expression condition, Instruction body, ArrayList<PairEI> elseif, Instruction bodyElse) {
+    public InsIf(Expression condition, Instruction body, List<PairEI> elseif, Instruction bodyElse) {
         this.condition = condition;
         this.body = body;
         this.elseif = elseif;
@@ -32,7 +32,7 @@ public class InsIf extends Instruction{
         return this.body;
     }
 
-    public ArrayList<PairEI> getElseif() {
+    public List<PairEI> getElseif() {
         return this.elseif;
     }
 

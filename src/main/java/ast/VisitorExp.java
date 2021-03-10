@@ -8,8 +8,8 @@ public interface VisitorExp<T> {
     T visit(ExpCharacter character);
     T visit(ExpInteger integer);
     T visit(ExpVariable variable);
-    T visit(ExpRecord record);
-    T visit(ExpArray array);
+    T visit(ExpRecordAccess record);
+    T visit(ExpArrayAccess array);
     T visit(ExpEnum enumeration);
     T visit(ExpTuple tuple);
     T visit(ExpFunctionCall function);

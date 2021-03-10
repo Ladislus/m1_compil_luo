@@ -52,12 +52,12 @@ public class VisitorBase<T> implements Visitor<T> {
     }
 
     @Override
-    public T visit(ExpRecord record) {
+    public T visit(ExpRecordAccess record) {
         return record.getRecord().accept(this);
     }
 
     @Override
-    public T visit(ExpArray array) {
+    public T visit(ExpArrayAccess array) {
         array.getArray().accept(this);
         return array.getIndex().accept(this);
     }

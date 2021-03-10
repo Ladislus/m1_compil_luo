@@ -1,6 +1,6 @@
 package ast;
 
-public enum EnumEqualOp {
+public enum EnumAssignOp {
     MINEQUAL {
         public String toString() {return "-="; }
     },

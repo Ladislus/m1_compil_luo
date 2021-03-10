@@ -1,23 +1,23 @@
 package ast;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class InsBlock extends Instruction {
 
-    private final ArrayList<Declaration> declarations;
-    private final ArrayList<Instruction> listBody;
+    private final List<Declaration> declarations;
+    private final List<Instruction> body;
 
-    public InsBlock(ArrayList<Declaration> declarations, ArrayList<Instruction> listBody) {
+    public InsBlock(List<Declaration> declarations, List<Instruction> body) {
         this.declarations = declarations;
-        this.listBody = listBody;
+        this.body = body;
     }
 
-    public ArrayList<Declaration> getDeclarations() {
+    public List<Declaration> getDeclarations() {
         return this.declarations;
     }
 
-    public ArrayList<Instruction> getListBody() {
-        return this.listBody;
+    public List<Instruction> getBody() {
+        return this.body;
     }
 
     @Override
