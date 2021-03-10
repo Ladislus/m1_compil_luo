@@ -143,26 +143,20 @@ public class VisitorDefault<T> implements Visitor<T> {
      */
     @Override
     public T visit(Function function) {
-        for (Declaration declaration: function.getParameters()) {
-            declaration.accept(this);
-        }
-
-        List<Instruction> instructions = function.getInstructions();
-        int size = instructions.size();
-        for (int index = 0; index < size-1; index++) {
-            instructions.get(index).accept(this);
-        }
-        return instructions.get(size-1).accept(this);
+        T curr = defaultValue;
+        for (Declaration declaration: function.getParameters())
+            curr = declaration.accept(this);
+        for (Instruction instruction: function.getInstructions())
+            curr = instruction.accept(this);
+        return curr;
     }
 
     @Override
     public T visit(TypeDefinition typeDefinition) {
-        List<Declaration> declarations = typeDefinition.getDeclarations();
-        int size = declarations.size();
-        for (int index = 0; index < size-1; index++) {
-            declarations.get(index).accept(this);
-        }
-        return declarations.get(size-1).accept(this);
+        T curr = defaultValue;
+        for (Declaration declaration: typeDefinition.getDeclarations())
+            curr = declaration.accept(this);
+        return curr;
     }
 
     @Override
@@ -183,21 +177,16 @@ public class VisitorDefault<T> implements Visitor<T> {
      */
     @Override
     public T visit(Program program){
-        for (Import my_import : program.getImports()){
-            my_import.accept(this);
-        }
-        for (GlobalDeclaration globalDeclaration : program.getGlobalDeclarations()){
-            globalDeclaration.accept(this);
-        }
-        for (TypeDefinition typeDefinition:program.getTypeDefinitions()){
-            typeDefinition.accept(this);
-        }
-        List<Function> functionList = program.getFunctions();
-        int size = functionList.size();
-        for (int index = 0; index < size-1 ; index++) {
-            functionList.get(index).accept(this);
-        }
-        return functionList.get(size-1).accept(this);
+        T curr = defaultValue;
+        for (Import my_import : program.getImports())
+            curr = my_import.accept(this);
+        for (GlobalDeclaration globalDeclaration : program.getGlobalDeclarations())
+            curr = globalDeclaration.accept(this);
+        for (TypeDefinition typeDefinition:program.getTypeDefinitions())
+            curr = typeDefinition.accept(this);
+        for (Function function: program.getFunctions())
+            curr = function.accept(this);
+        return curr;
     }
 
     // #####################################################################################################
