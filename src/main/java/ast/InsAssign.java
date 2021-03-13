@@ -2,22 +2,23 @@ package ast;
 
 public class InsAssign extends Instruction {
 
-    private final Expression Expression1;
-    private final Expression Expression2;
+    private final Expression lValue;
+    private final Expression expression;
     private final EnumAssignOp operation;
 
-    public InsAssign(Expression expression1, Expression expression2, EnumAssignOp operation) {
-        this.Expression1 = expression1;
-        this.Expression2 = expression2;
+    public InsAssign(Position position, Expression lValue, EnumAssignOp operation, Expression expression) {
+        this.position = position;
+        this.lValue = lValue;
+        this.expression = expression;
         this.operation = operation;
     }
 
-    public Expression getExpression1() {
-        return this.Expression1;
+    public Expression getlValue() {
+        return this.lValue;
     }
 
-    public Expression getExpression2() {
-        return this.Expression2;
+    public Expression getExpression() {
+        return this.expression;
     }
 
     public EnumAssignOp getOperation() {

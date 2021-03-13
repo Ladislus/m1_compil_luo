@@ -8,16 +8,25 @@ public class Declaration extends Node{
     private String variable;
     private Optional<Expression> expression;
 
-    public Declaration(Type type, String variable) {
+    public Declaration(Position position, Type type, String variable) {
+        this.position = position;
         this.type = type;
         this.variable = variable;
         this.expression = Optional.empty();
     }
 
-    public Declaration(Type type, String variable, Expression expression) {
+    public Declaration(Position position, Type type, String variable, Expression expression) {
+        this.position = position;
         this.type = type;
         this.variable = variable;
         this.expression = Optional.of(expression);
+    }
+
+    public Declaration(Position position, Type type, String variable, Optional<Expression> expression) {
+        this.position = position;
+        this.type = type;
+        this.variable = variable;
+        this.expression = expression;
     }
 
     public Type getType() {

@@ -3,8 +3,8 @@ package ast;
 
 import java.util.List;
 
+abstract // TODO: TO REMOVE LATER WHEN THE CLASS IS COMPLETE
 public class VisitorBase<T> implements Visitor<T> {
-
 
     // ##########################
     // #    Block Expression    #
@@ -78,7 +78,7 @@ public class VisitorBase<T> implements Visitor<T> {
     @Override
     public T visit(ExpFunctionCall function) {
         T curr = null;
-        for (Expression exp : function.getArgs()) curr = exp.accept(this);
+        for (Expression exp : function.getArguments()) curr = exp.accept(this);
         return curr;
     }
 
@@ -125,12 +125,12 @@ public class VisitorBase<T> implements Visitor<T> {
     // # Bloc Definition de fonction, définition de type, imports, déclarations globales et programmes #
     // #################################################################################################
 
-    /**
+    /** Authors
      * @author  Nicolas ZHOU
      * @author  Marion JURE
      * @author  Mathis QUERAULT
      * @author  Tristan LE SAUX
-     */
+     **/
 
     /**
      * Cette methode visite l'arbre d'une fonction de façon arbitraire :
@@ -143,7 +143,7 @@ public class VisitorBase<T> implements Visitor<T> {
         T curr = null;
         for (Declaration declaration: function.getParameters())
             curr = declaration.accept(this);
-        for (Instruction instruction: function.getInstructions())
+        for (Instruction instruction: function.getBody().getBody())
             curr = instruction.accept(this);
         return curr;
     }

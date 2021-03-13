@@ -7,7 +7,8 @@ public class InsBlock extends Instruction {
     private final List<Declaration> declarations;
     private final List<Instruction> body;
 
-    public InsBlock(List<Declaration> declarations, List<Instruction> body) {
+    public InsBlock(Position position, List<Declaration> declarations, List<Instruction> body) {
+        this.position = position;
         this.declarations = declarations;
         this.body = body;
     }

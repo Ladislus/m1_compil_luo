@@ -15,86 +15,83 @@ grammar Luo;
 
 // TO MODIFY:
 program:
-   (imports)*
-   (global_declaration|type_definition|function_definition)*
+   (imports Semicolon?)*
+   (global_declaration |type_definition|function_definition)*
     EOF
    ;
 
 
-global_declaration:
-       visibilite? Static declaration
-       ;
+global_declaration: Visibility? Static declaration;
 
 declaration:
-          type_expression Identifier EqualSymbol expression      #LocalDeclarationInit
-       |  type_expression Identifier                             #LocalDeclaration
+          type_expression Identifier EqualSymbol expression Semicolon?     #LocalDeclarationInit
+       |  type_expression Identifier                        Semicolon?     #LocalDeclaration
        ;
 
+block : OpenBracket (declaration)* (instruction)* ClosedBracket ;
+
 instruction :
-     // Tous les mots-clés sont à définir en tant que lexèmes, et pour tous
-        // Il manque : l'affectation, return, break
             If OpenedParenthesis expression ClosedParenthesis instruction
             (Elseif OpenedParenthesis expression ClosedParenthesis instruction)*
-            (Else OpenedParenthesis expression ClosedParenthesis instruction)?                                          #If
-        |   Foreach OpenedParenthesis type_expression Identifier Colon expression ClosedParenthesis instruction         #Foreach
-        |   For OpenedParenthesis declaration Semicolon expression Semicolon expression ClosedParenthesis instruction   #For
-        |   While OpenedParenthesis expression ClosedParenthesis instruction                                            #While
-        |   Do instruction While OpenedParenthesis expression ClosedParenthesis                                         #Dowhile
-        |   expression                                                                                                  #InsExpression
-        |   OpenBracket (declaration)* (instruction)* ClosedBracket                                                     #Block
-        |   Return expression                                                                                           #Return
-        |   Break                                                                                                       #Break
-        |   expression op=(MinusEqual|PlusEqual|MultEqual|DivEqual|EqualSymbol) expression                              #Affectation
+            (Else OpenedParenthesis expression ClosedParenthesis instruction)?                                          #InsIf
+        |   Foreach OpenedParenthesis type_expression Identifier Colon expression ClosedParenthesis instruction         #InsForeach
+        |   For OpenedParenthesis declaration Semicolon expression Semicolon expression ClosedParenthesis instruction   #InsFor
+        |   While OpenedParenthesis expression ClosedParenthesis instruction                                            #InsWhile
+        |   Do instruction While OpenedParenthesis expression ClosedParenthesis                                         #InsDowhile
+        |   expression Semicolon?                                                                                       #InsExpression
+        |   block                                                                                                       #InsBlock
+        |   Return expression Semicolon?                                                                                #InsReturn
+        |   Break Semicolon?                                                                                            #InsBreak
+        |   expression op=(MinusEqual|PlusEqual|MultEqual|DivEqual|EqualSymbol) expression                              #InsAssign
         ;
 expression :
-      Identifier OpenedParenthesis actual_parameter_list? ClosedParenthesis                                                                 #FunctionCall
-    | expression OpenSquareBracket expression ClosedSquareBracket                                                                           #AccessTabDico
-    | expression Dot Identifier                                                                                                             #AccessRec
-    | OpenedParenthesis expression ClosedParenthesis                                                                                        #Parenthesis
-    | (PlusPlus | MinusMinus) expression                                                                                                    #PreUnary
-    | expression (PlusPlus | MinusMinus)                                                                                                    #PostUnary
-    | expression op=(Multiplication | Division | Modulo) expression                                                                         #MulDivMod
-    | expression op=(Plus | Minus) expression                                                                                               #AddSub
-    | expression op=(GreaterThan | GreaterOrEqual | LesserThan | LesserOrEqual | Different | Equal ) expression                             #Comparison
-    | expression LogicalAnd expression                                                                                                      #And
-    | expression LogicalOr expression                                                                                                       #Or
-    | Negation expression                                                                                                                   #Not
-    | Minus expression                                                                                                                      #Opposite
-    | Integer                                                                                                                               #Integer
-    | Character                                                                                                                             #Character
-    | String                                                                                                                                #String
-    | Boolean                                                                                                                               #Boolean
-    | Identifier                                                                                                                            #Identifier
+      Identifier OpenedParenthesis actual_parameter_list? ClosedParenthesis                                             #ExpFunctionCall
+    | expression OpenSquareBracket expression ClosedSquareBracket                                                       #ExpAccessTabDico
+    | expression Dot Identifier                                                                                         #ExpAccessRec
+    | OpenedParenthesis expression ClosedParenthesis                                                                    #ExpParenthesis
+    | (PlusPlus | MinusMinus) expression                                                                                #ExpPreUnary
+    | expression op=(PlusPlus | MinusMinus)                                                                                #ExpPostUnary
+    | expression op=(Multiplication | Division | Modulo) expression                                                     #ExpMulDivMod
+    | Minus expression                                                                                                  #ExpOpposite
+    | expression op=(Plus | Minus) expression                                                                           #ExpAddSub
+    | expression op=(GreaterThan | GreaterOrEqual | LesserThan | LesserOrEqual | Different | Equal ) expression         #ExpComparison
+    | expression op=LogicalAnd expression                                                                                  #ExpAnd
+    | expression op=LogicalOr expression                                                                                   #ExpOr
+    | Negation expression                                                                                               #ExpNot
+    | Integer                                                                                                           #ExpInteger
+    | Character                                                                                                         #ExpCharacter
+    | String                                                                                                            #ExpString
+    | Boolean                                                                                                           #ExpBoolean
+    | Identifier                                                                                                        #ExpIdentifier
     ;
 
 actual_parameter_list:
-      ((expression Comma)* expression)?
+      ((expression Comma)* expression)
       ;
 
-type_definition : Rec type_expression OpenBracket (type_expression Identifier Semicolon)* ClosedBracket Semicolon;
+type_definition : Rec type_expression OpenBracket (type_expression Identifier Semicolon)* ClosedBracket Semicolon?;
 
 type_expression:
-    (IntegerType|BooleanType|CharType)
-    |type_expression Array
-    |Identifier Map
-    |Identifier
+      type=(IntegerType|BooleanType|CharType)    #TypPrimitive
+    | type_expression Array                      #TypArray
+    | Identifier Map                             #TypMap
+    | Identifier                                 #TypIdentifier
     ;
 
-function_definition : visibilite type_expression Identifier OpenedParenthesis argument_list? ClosedParenthesis OpenBracket (instruction*)? Return expression ClosedBracket
-    | visibilite Void Identifier OpenedParenthesis argument_list? ClosedParenthesis OpenBracket (instruction*)? Return expression ClosedBracket;
+function_definition :
+      Visibility type_expression Identifier OpenedParenthesis argument_list? ClosedParenthesis block  #DefinitionFunction
+    | Visibility Void Identifier OpenedParenthesis argument_list? ClosedParenthesis OpenBracket block #DefinitionProcedure;
 
-visibilite : Public
-    |   Private;
+Visibility : Public | Private;
 
-argument_list : (Identifier type_expression (Colon expression)?)
-    | ((Identifier type_expression (Colon expression)?) Comma)* (Identifier type_expression (Colon expression)?);
+argument : type_expression Identifier (Colon expression)? ;
 
-imports :  Import DoubleQuote (repertoire*)? Identifier DoubleQuote;
+argument_list : (argument Comma)* argument;
 
-repertoire : Root
-    |   Identifier Division
-    |   Parent
-    |   Division;
+imports : Import Path;
+
+// Not perfect, but will do
+Path : DoubleQuote(Identifier?(Current|Division|Parent))*Identifier DoubleQuote;
 
 // Some lexer rules.
 // Additional rules are needed for all the keywords and reserved symbols.
@@ -168,7 +165,7 @@ Array: 'array';
 Import:'import';
 Return:'return';
 Colon:':';
-Root:'./';
+Current:'./';
 Parent:'../';
 
 //*******************************************************
@@ -176,7 +173,3 @@ Parent:'../';
 Identifier: (Underscore|Letter)(Underscore|Letter|Digit)*;
 Letter: [a-zA-Z];
 WS: [ \t\r\n]+ -> skip;
-
-
-
-

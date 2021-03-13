@@ -6,7 +6,8 @@ public class ExpEnum extends Expression {
 
     private final List<Expression> elements;
 
-    public ExpEnum(List<Expression> elements) {
+    public ExpEnum(Position position, List<Expression> elements) {
+        this.position = position;
         this.elements = elements;
     }
 

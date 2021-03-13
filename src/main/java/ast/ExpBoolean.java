@@ -4,7 +4,8 @@ public class ExpBoolean extends Expression{
 
     private final boolean value;
 
-    public ExpBoolean(boolean value) {
+    public ExpBoolean(Position position, boolean value) {
+        this.position = position;
         this.value = value;
     }
 

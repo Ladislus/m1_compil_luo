@@ -1,5 +1,7 @@
 package ast;
 
+import javafx.geometry.Pos;
+
 public class InsFor extends Instruction {
 
     private final Declaration declaration;
@@ -7,7 +9,8 @@ public class InsFor extends Instruction {
     private final Expression step;
     private final Instruction body;
 
-    public InsFor(Declaration declaration, Expression range, Expression step, Instruction body) {
+    public InsFor(Position position, Declaration declaration, Expression range, Expression step, Instruction body) {
+        this.position = position;
         this.declaration = declaration;
         this.range = range;
         this.step = step;

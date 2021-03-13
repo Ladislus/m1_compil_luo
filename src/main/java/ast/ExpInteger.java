@@ -4,7 +4,8 @@ public class ExpInteger extends Expression {
 
     private final int value;
 
-    public ExpInteger(int value) {
+    public ExpInteger(Position position, int value) {
+        this.position = position;
         this.value = value;
     }
 

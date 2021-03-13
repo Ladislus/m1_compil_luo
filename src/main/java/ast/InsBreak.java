@@ -2,7 +2,8 @@ package ast;
 
 public class InsBreak extends Instruction {
 
-    public InsBreak() {
+    public InsBreak(Position position) {
+        this.position = position;
     }
 
     @Override

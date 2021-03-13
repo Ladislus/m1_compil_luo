@@ -2,6 +2,7 @@ package ast;
 
 import java.util.List;
 
+abstract // TODO: TO REMOVE LATER WHEN THE CLASS IS COMPLETE
 public class VisitorDefault<T> implements Visitor<T> {
 
     private T defaultValue;

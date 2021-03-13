@@ -5,7 +5,8 @@ public class ExpTuple extends Expression {
     private final Expression first;
     private final Expression second;
 
-    public ExpTuple(Expression first, Expression second) {
+    public ExpTuple(Position position, Expression first, Expression second) {
+        this.position = position;
         this.first = first;
         this.second = second;
     }
