@@ -83,7 +83,7 @@ public class VisitorDefault<T> implements Visitor<T> {
     @Override
     public T visit(ExpFunctionCall function) {
         T curr = this.defaultValue;
-        for (Expression exp : function.getArgs()) curr = exp.accept(this);
+        for (Expression exp : function.getArguments()) curr = exp.accept(this);
         return curr;
     }
 
