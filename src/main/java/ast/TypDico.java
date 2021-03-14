@@ -4,7 +4,8 @@ public class TypDico extends Type{
     private Type type;
 
 
-    public TypDico(Type type) {
+    public TypDico(Position position, Type type) {
+        this.position = position;
         this.type = type;
     }
 

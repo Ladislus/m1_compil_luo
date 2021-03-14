@@ -4,7 +4,8 @@ public class InsExpression extends Instruction {
 
     private final Expression expression;
 
-    public InsExpression(Expression expression) {
+    public InsExpression(Position position, Expression expression) {
+        this.position = position;
         this.expression = expression;
     }
 

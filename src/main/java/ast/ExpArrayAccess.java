@@ -5,7 +5,8 @@ public class ExpArrayAccess extends Expression {
     private final Expression array;
     private final Expression index;
 
-    public ExpArrayAccess(Expression array, Expression index) {
+    public ExpArrayAccess(Position position, Expression array, Expression index) {
+        this.position = position;
         this.array = array;
         this.index = index;
     }

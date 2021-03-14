@@ -4,7 +4,8 @@ public class Import extends Node{
 
     private String path;
 
-    public Import(String path){
+    public Import(Position position, String path){
+        this.position = position;
         this.path=path;
     }
 

@@ -5,7 +5,8 @@ public class ExpRecordAccess extends Expression {
     private final Expression record;
     private final String field;
 
-    public ExpRecordAccess(Expression record, String field) {
+    public ExpRecordAccess(Position position, Expression record, String field) {
+        this.position = position;
         this.record = record;
         this.field = field;
     }

@@ -4,7 +4,8 @@ public class TypPrimitive extends Type {
 
     private EnumPrimitiveType type;
 
-    public TypPrimitive(EnumPrimitiveType primitiveType) {
+    public TypPrimitive(Position position, EnumPrimitiveType primitiveType) {
+        this.position = position;
         this.type = primitiveType;
     }
 

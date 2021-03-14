@@ -1,8 +1,12 @@
 package ast;
+
+import javafx.geometry.Pos;
+
 public class TypVariable extends Type {
     private String name;
 
-    public TypVariable(String name) {
+    public TypVariable(Position position, String name) {
+        this.position = position;
         this.name = name;
     }
 

@@ -4,10 +4,11 @@ public class InstForeach extends Instruction{
 
     private final Expression collection;
     private final Type type;
-    private final Expression identifier;
+    private final String identifier;
     private final Instruction body;
 
-    public InstForeach(Type type, Expression identifier, Expression collection, Instruction body){
+    public InstForeach(Position position, Type type, String identifier, Expression collection, Instruction body){
+        this.position = position;
         this.type = type;
         this.collection = collection;
         this.identifier = identifier;
@@ -18,7 +19,7 @@ public class InstForeach extends Instruction{
         return this.collection;
     }
 
-    public Expression getIdentifier() {
+    public String getIdentifier() {
         return this.identifier;
     }
 

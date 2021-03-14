@@ -5,7 +5,8 @@ public class ExpPreUnaryOperation extends Expression {
     private final Expression expression;
     private final EnumUnaryOp operator;
 
-    public ExpPreUnaryOperation(Expression expression, EnumUnaryOp operator) {
+    public ExpPreUnaryOperation(Position position, Expression expression, EnumUnaryOp operator) {
+        this.position = position;
         this.expression = expression;
         this.operator = operator;
     }

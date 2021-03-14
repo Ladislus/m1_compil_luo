@@ -4,23 +4,24 @@ import java.util.List;
 
 
 public class Program extends Node{
-    // TO COMPLETE
+
     private List<Import> imports;
     private List<GlobalDeclaration> globalDeclarations;
     private List<TypeDefinition> typeDefinitions;
     private List<Function> functions;
 
-    public Program() {
-        imports = new ArrayList<>();
-        globalDeclarations = new ArrayList<>();
-        typeDefinitions = new ArrayList<>();
-        functions = new ArrayList<>();
+    public Program(Position position) {
+        this(position,
+          new ArrayList<>(), new ArrayList<>(),
+          new ArrayList<>(), new ArrayList<>());
     }
 
-    public Program(List<Import> imports,
+    public Program(Position position,
+                   List<Import> imports,
                    List<GlobalDeclaration> globalDeclarations,
                    List<TypeDefinition> typeDefinitions,
                    List<Function> functions) {
+        this.position = position;
         this.imports = imports;
         this.globalDeclarations = globalDeclarations;
         this.typeDefinitions = typeDefinitions;

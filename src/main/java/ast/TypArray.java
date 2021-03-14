@@ -4,7 +4,8 @@ public class TypArray extends Type {
 
     private Type type;
 
-    public TypArray(Type type) {
+    public TypArray(Position position, Type type) {
+        this.position = position;
         this.type = type;
     }
 

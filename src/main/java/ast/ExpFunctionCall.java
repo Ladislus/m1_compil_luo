@@ -4,21 +4,22 @@ import java.util.List;
 
 public class ExpFunctionCall extends Expression {
 
-    private final String function;
-    private final List<Expression> args;
+    private final String name;
+    private final List<Expression> arguments;
 
-    public ExpFunctionCall(String function, List<Expression> args) {
-        this.function = function;
-        this.args = args;
+    public ExpFunctionCall(Position position, String function, List<Expression> arguments) {
+        this.position = position;
+        this.name = function;
+        this.arguments = arguments;
     }
 
 
-    public String getFunction() {
-        return this.function;
+    public String getName() {
+        return this.name;
     }
 
-    public List<Expression> getArgs() {
-        return this.args;
+    public List<Expression> getArguments() {
+        return this.arguments;
     }
 
     @Override
