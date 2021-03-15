@@ -1,0 +1,10 @@
+public char array inverse(char input_string){
+    int len = length(input_string);
+    char array output_string = new char(len)
+    int counter = 0
+    while (counter < len){
+        output_string[counter] = input_string[len-1-counter];
+        counter += 1
+    }
+    return output_string
+}

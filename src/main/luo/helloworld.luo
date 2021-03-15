@@ -1,0 +1,14 @@
+private rec version {
+    int major;
+    int minor;
+}
+
+private void print(Version v){
+    print(v.major, ".", v.minor)
+}
+
+private static int Version = { major = 1, minor = 0 }
+
+public void main(char array array arguments){
+    print("Hello World !\n", "Version: ", Version, "\n")
+}
