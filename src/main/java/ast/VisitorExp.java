@@ -1,8 +1,7 @@
 package ast;
 
 public interface VisitorExp<T> {
-    T visit(ExpPreUnaryOperation operation);
-    T visit(ExpPostUnaryOperation operation);
+    T visit(ExpUnaryOperation operation);
     T visit(ExpBinaryOperation operation);
     T visit(ExpBoolean bool);
     T visit(ExpCharacter character);

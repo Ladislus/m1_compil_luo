@@ -18,14 +18,13 @@ public class VisitorCopy implements Visitor<Node> {
    * @author Corentin HERVOCHON
    * @author Martin GUERRAUD
   */
-  @Override
-  public Node visit(ExpPreUnaryOperation operation) {
-    return new ExpPreUnaryOperation(operation.position.copy(), (Expression) operation.getExpression().accept(this), operation.getOperator());
-  }
 
   @Override
-  public Node visit(ExpPostUnaryOperation operation) {
-    return new ExpPostUnaryOperation(operation.getPosition().copy(), (Expression) operation.getExpression().accept(this), operation.getOperator());
+  public Node visit(ExpUnaryOperation operation) {
+    return new ExpUnaryOperation(operation.getPosition().copy(),
+      operation.getOperator(),
+      (Expression) operation.getExpression().accept(this),
+      operation.isPrefix());
   }
 
   @Override

@@ -1,8 +1,6 @@
 package ast;
 
 
-import java.util.List;
-
 abstract // TODO: TO REMOVE LATER WHEN THE CLASS IS COMPLETE
 public class VisitorBase<T> implements Visitor<T> {
 
@@ -15,13 +13,9 @@ public class VisitorBase<T> implements Visitor<T> {
      * @author Corentin HERVOCHON
      * @author Martin GUERRAUD
      */
-    @Override
-    public T visit(ExpPreUnaryOperation operation) {
-        return operation.getExpression().accept(this);
-    }
 
     @Override
-    public T visit(ExpPostUnaryOperation operation) {
+    public T visit(ExpUnaryOperation operation) {
         return operation.getExpression().accept(this);
     }
 
