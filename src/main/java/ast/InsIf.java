@@ -28,6 +28,14 @@ public class InsIf extends Instruction{
         this.bodyElse = Optional.of(bodyElse);
     }
 
+    public InsIf(Position position, Expression condition, Instruction body, List<Pair<Expression,Instruction>> elseif, Optional<Instruction> bodyElse) {
+        this.position = position;
+        this.condition = condition;
+        this.body = body;
+        this.elseif = elseif;
+        this.bodyElse = bodyElse;
+    }
+
     public Expression getCondition() {
         return this.condition;
     }

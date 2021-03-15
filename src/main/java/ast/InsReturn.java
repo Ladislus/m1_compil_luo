@@ -9,8 +9,12 @@ public class InsReturn extends Instruction {
         this.expression = expression;
     }
 
+    public Expression getExpression() {
+        return this.expression;
+    }
+
     @Override
-    <T> T accept(Visitor<T> visitor) {
+    public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
     }
 }

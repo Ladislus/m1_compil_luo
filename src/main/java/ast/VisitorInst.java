@@ -10,4 +10,5 @@ public interface VisitorInst<T> {
     T visit(InsBlock instruction);
     T visit(InsBreak instruction);
     T visit(InsExpression instruction);
+    T visit(InsReturn instruction);
 }
