@@ -3,7 +3,6 @@ package ast;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class VisitorCopy implements Visitor<Node> {
 
   // ToDo: il faut ajouter le paramètre position à tous les constructeurs
@@ -21,84 +20,71 @@ public class VisitorCopy implements Visitor<Node> {
   */
   @Override
   public Node visit(ExpPreUnaryOperation operation) {
-    // ToDo: attention, ici ça boucle. Votre code:
-    // return new ExpPreUnaryOperation(operation.getExpression(), operation.getOperator()).getExpression().accept(this);
-    // Code correct :
-    Expression expression = (Expression) operation.getExpression().accept(this);
-    return new ExpPreUnaryOperation(operation.position.copy(), expression, operation.getOperator());
-
+    return new ExpPreUnaryOperation(operation.position.copy(), (Expression) operation.getExpression().accept(this), operation.getOperator());
   }
 
   @Override
   public Node visit(ExpPostUnaryOperation operation) {
-    return new ExpPostUnaryOperation(operation.getExpression(), operation.getOperator()).getExpression().accept(this);
+    return new ExpPostUnaryOperation(operation.getPosition().copy(), (Expression) operation.getExpression().accept(this), operation.getOperator());
   }
 
   @Override
   public Node visit(ExpBinaryOperation operation) {
-    ExpBinaryOperation no = new ExpBinaryOperation(operation.getLeft(), operation.getOperator(), operation.getRight());
-    no.getLeft().accept(this);
-    return no.getRight().accept(this);
+    new ExpBinaryOperation(operation.getPosition().copy(), (Expression) operation.getLeft().accept(this), operation.getOperator(), (Expression) operation.getRight().accept(this));
   }
 
   @Override
   public Node visit(ExpBoolean bool) {
-    return null;
+    return new ExpBoolean(bool.getPosition().copy(), bool.getValue());
   }
 
   @Override
   public Node visit(ExpCharacter character) {
-    return null;
+    return new ExpCharacter(character.getPosition().copy(), character.getValue());
   }
 
   @Override
   public Node visit(ExpInteger integer) {
-    return null;
+    return new ExpInteger(integer.getPosition().copy(), integer.getValue());
   }
 
   @Override
   public Node visit(ExpVariable variable) {
-    return null;
+    return new ExpVariable(variable.getPosition().copy(), new String(variable.getVariable()));
   }
 
   @Override
   public Node visit(ExpRecordAccess record) {
-    return new ExpRecordAccess(record.getRecord(), new String(record.getField())).getRecord().accept(this);
+    return new ExpRecordAccess(record.getPosition().copy(), (Expression) record.getRecord().accept(this), new String(record.getField()));
   }
 
   @Override
   public Node visit(ExpArrayAccess array) {
-    ExpArrayAccess na = new ExpArrayAccess(array.getArray(), array.getIndex());
-    na.getArray().accept(this);
-    return na.getIndex().accept(this);
+    return new ExpArrayAccess(array.getPosition().copy(), (Expression) array.getArray().accept(this), (Expression) array.getIndex().accept(this));
   }
 
   @Override
   public Node visit(ExpEnum enumeration) {
-    ExpEnum ne = new ExpEnum(new ArrayList<>(enumeration.getElements()));
-    Node curr = null;
-    for (Expression exp : ne.getElements()) curr = exp.accept(this);
-    return curr;
+    List<Expression> ne = new ArrayList<>();
+    for (Expression exp : enumeration.getElements()) ne.add((Expression) exp.accept(this));
+    return new ExpEnum(enumeration.getPosition().copy(), ne);
   }
 
   @Override
   public Node visit(ExpTuple tuple) {
-    ExpTuple nt = new ExpTuple(tuple.getFirst(), tuple.getSecond());
-    nt.getFirst().accept(this);
-    return nt.getSecond().accept(this);
+    return new ExpTuple(tuple.getPosition().copy(), (Expression) tuple.getFirst().accept(this), (Expression) tuple.getSecond().accept(this));
   }
 
   @Override
   public Node visit(ExpFunctionCall function) {
-    ExpFunctionCall nf = new ExpFunctionCall(new String(function.getName()), new ArrayList<>(function.getArguments()));
-    Node curr = null;
-    for (Expression exp : nf.getArguments()) curr = exp.accept(this);
-    return curr;
+    List<Expression> na = new ArrayList<>();
+    for (Expression exp : function.getArguments()) na.add((Expression) exp.accept(this));
+    return new ExpFunctionCall(function.getPosition().copy(), new String(function.getName()), na);
   }
 
   @Override
   public Node visit(ExpString string) {
-    return null;
+    return new ExpString(string.getPosition().copy(), new String(string.getValue()));
   }
   // ##############################
   // #    Fin Block Expression    #
