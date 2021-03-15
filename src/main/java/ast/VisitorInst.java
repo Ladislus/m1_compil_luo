@@ -1,7 +1,7 @@
 package ast;
 
 public interface VisitorInst<T> {
-    T visit(Instruction instruction);
+    // SHOULD NOT BE IN THE VISITOR ! T visit(Instruction instruction);
     T visit(InsFor instruction);
     T visit(InsWhile instruction);
     T visit(InstForeach instruction);
