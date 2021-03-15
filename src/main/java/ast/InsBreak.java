@@ -7,7 +7,7 @@ public class InsBreak extends Instruction {
     }
 
     @Override
-    <T> T accept(Visitor<T> visitor) {
+    public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
     }
 }
