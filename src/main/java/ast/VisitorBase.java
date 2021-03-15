@@ -59,7 +59,7 @@ public class VisitorBase<T> implements Visitor<T> {
     }
 
     @Override
-    public T visit(ExpEnum enumeration) {
+    public T visit(ExpArrayEnum enumeration) {
         T curr = null;
         for (Expression exp : enumeration.getElements()) curr = exp.accept(this);
         return curr;

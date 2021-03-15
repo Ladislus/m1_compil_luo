@@ -66,10 +66,10 @@ public class VisitorCopy implements Visitor<Node> {
   }
 
   @Override
-  public Node visit(ExpEnum enumeration) {
+  public Node visit(ExpArrayEnum enumeration) {
     List<Expression> ne = new ArrayList<>();
     for (Expression exp : enumeration.getElements()) ne.add((Expression) exp.accept(this));
-    return new ExpEnum(enumeration.getPosition().copy(), ne);
+    return new ExpArrayEnum(enumeration.getPosition().copy(), ne);
   }
 
   @Override

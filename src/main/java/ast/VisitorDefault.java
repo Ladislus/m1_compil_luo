@@ -64,7 +64,7 @@ public class VisitorDefault<T> implements Visitor<T> {
     }
 
     @Override
-    public T visit(ExpEnum enumeration) {
+    public T visit(ExpArrayEnum enumeration) {
         T curr = this.defaultValue;
         for (Expression exp : enumeration.getElements()) curr = exp.accept(this);
         return curr;
@@ -143,7 +143,7 @@ public class VisitorDefault<T> implements Visitor<T> {
         T curr = defaultValue;
         for (Declaration declaration: function.getParameters())
             curr = declaration.accept(this);
-        for (Instruction instruction: function.getInstructions())
+        for (Instruction instruction: function.getBody().getInstructions())
             curr = instruction.accept(this);
         return curr;
     }
