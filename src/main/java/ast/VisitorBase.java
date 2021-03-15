@@ -191,6 +191,8 @@ public class VisitorBase<T> implements Visitor<T> {
     // #################################
     /**
      * @author Letord Baptiste
+     * @author Arnaud Pasquier
+     * @author Habib Bayoussoula
      */
 
     public T visit(Declaration declaration){
@@ -300,6 +302,9 @@ public class VisitorBase<T> implements Visitor<T> {
     public T visit(InsExpression instruction) {
         return instruction.getExpression().accept(this);
     }
+
+    @Override
+    public T visit(InsReturn instruction) { return instruction.getExpression().accept(this);}
 
     // ##########################
     // #    Fin Instruction     #

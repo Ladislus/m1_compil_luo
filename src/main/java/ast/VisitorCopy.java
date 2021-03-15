@@ -208,6 +208,8 @@ public class VisitorCopy implements Visitor<Node> {
   // #################################
   /**
    * @author Letord Baptiste
+   * @author Arnaud Pasquier
+   * @author Habib Bayoussoula
    */
 
   @Override
@@ -331,6 +333,14 @@ public class VisitorCopy implements Visitor<Node> {
   @Override
   public Node visit(InsExpression instruction) {
     return new InsExpression(
+            instruction.getPosition().copy(),
+            (Expression) instruction.getExpression().accept(this)
+    );
+  }
+
+  @Override
+  public Node visit(InsReturn instruction) {
+    return new InsReturn(
             instruction.getPosition().copy(),
             (Expression) instruction.getExpression().accept(this)
     );
