@@ -38,7 +38,7 @@ public class GlobalDeclaration extends Declaration {
     }
 
     @Override
-    <T> T accept(Visitor<T> visitor) {
+    public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
     }
 }

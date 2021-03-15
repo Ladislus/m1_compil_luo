@@ -23,7 +23,7 @@ public class ExpFunctionCall extends Expression {
     }
 
     @Override
-    <T> T accept(Visitor<T> visitor) {
+    public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
     }
 }

@@ -27,7 +27,7 @@ public class TypeDefinition extends Node{
     public String getName(){ return this.name;}
 
     @Override
-    <T> T accept(Visitor<T> visitor) {
+    public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
     }
 }

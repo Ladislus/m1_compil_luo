@@ -12,7 +12,7 @@ public class ExpString extends Expression {
     public String getValue() { return this.value; }
 
     @Override
-    <T> T accept(Visitor<T> visitor) {
+    public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
     }
 }

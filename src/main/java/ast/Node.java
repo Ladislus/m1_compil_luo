@@ -14,5 +14,5 @@ public abstract class Node {
         return position;
     }
 
-    abstract <T> T accept(Visitor<T> visitor);
+    public abstract <T> T accept(Visitor<T> visitor);
 }
