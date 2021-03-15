@@ -1,7 +1,10 @@
 package ast;
 
+import support.Pair;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class VisitorCopy implements Visitor<Node> {
 
@@ -200,4 +203,140 @@ public class VisitorCopy implements Visitor<Node> {
   // # FIN Bloc Definition de fonction, définition de type, imports, déclarations globales et programmes #
   // #####################################################################################################
 
+  // ##################################
+  // #    Block Declaration Locale    #
+  // #################################
+  /**
+   * @author Letord Baptiste
+   */
+
+  @Override
+  public Node visit(Declaration declaration){
+    Type type = (Type) declaration.getType().accept(this);
+    if (declaration.getExpression().isEmpty()){
+      return new Declaration(declaration.getPosition().copy(), type, declaration.getVariable());
+    }
+    else {
+      return new Declaration(declaration.getPosition().copy(),
+              type,
+              declaration.getVariable(),
+              (Expression) declaration.getExpression().get().accept(this));
+    }
+  }
+  // ######################################
+  // #    Fin Block Declaration Locale    #
+  // ######################################
+
+  // ##########################
+  // #    Block Instruction   #
+  // ##########################
+  /**
+   * @author BENAI Mahmoud
+   * @author BONHOMME Hugo
+   * @author BRAHIM AZIB Youssouf
+   * @author VADET Alexandre
+   */
+
+  @Override
+  public Node visit(InsFor instruction) {
+    return new InsFor(
+            instruction.getPosition().copy(),
+            (Declaration) instruction.getDeclaration().accept(this),
+            (Expression) instruction.getRange().accept(this),
+            (Expression) instruction.getStep().accept(this),
+            (Instruction) instruction.getBody().accept(this)
+    );
+  }
+
+  @Override
+  public Node visit(InsWhile instruction) {
+    if(instruction.getDoWhile()){
+      InsWhile inst_do_while = InsWhile.insDoWhile(instruction.getPosition().copy(),
+              (Expression) instruction.getCondition().accept(this),
+              (Instruction) instruction.getBody().accept(this));
+      return inst_do_while;
+    }
+    else {
+      InsWhile inst_while = InsWhile.insWhile(instruction.getPosition().copy(),
+              (Expression) instruction.getCondition().accept(this),
+              (Instruction) instruction.getBody().accept(this));
+      return inst_while;
+    }
+  }
+
+  @Override
+  public Node visit(InstForeach instruction) {
+    return new InstForeach(
+            instruction.getPosition().copy(),
+            (Type) instruction.getType().accept(this),
+            instruction.getIdentifier(),
+            (Expression) instruction.getCollection().accept(this),
+            (Instruction) instruction.getBody().accept(this)
+    );
+  }
+
+  @Override
+  public Node visit(InsIf instruction) {
+    List<Pair> pairList = new ArrayList<>();
+    for(Pair pair : instruction.getElseif()){
+      Pair<Expression, Instruction> newPair = new Pair<>((Expression) pair.getFst().accept(this),(Instruction) pair.getSnd().accept(this));
+      pairList.add(newPair);
+    }
+
+    return new InsIf(
+            instruction.getPosition().copy(),
+            (Expression) instruction.getCondition().accept(this),
+            (Instruction) instruction.getBody().accept(this),
+            pairList,
+            (Optional<Instruction>) instruction.getBodyElse().get().accept(this)
+    );
+  }
+
+  @Override
+  public Node visit(InsAssign instruction) {
+    return new InsAssign(
+            instruction.getPosition().copy(),
+            (Expression) instruction.getlValue().accept(this),
+            (EnumAssignOp) instruction.getOperation(),
+            (Expression) instruction.getExpression().accept(this)
+    );
+  }
+
+  @Override
+  public Node visit(InsBlock instruction) {
+    List<Declaration> declarationList = new ArrayList<>();
+    for(Declaration declaration : instruction.getDeclarations()){
+      declarationList.add((Declaration) declaration.accept(this));
+    }
+
+    List<Instruction>expressionList = new ArrayList<>();
+    for(Instruction instruction1 : instruction.getBody()){
+      expressionList.add((Instruction) instruction1.accept(this));
+    }
+
+    return new InsBlock(
+            instruction.getPosition().copy(),
+            declarationList,
+            expressionList
+    );
+  }
+
+  @Override
+  public Node visit(InsBreak instruction) {
+    return new InsBreak(
+            instruction.getPosition().copy()
+    );
+  }
+
+  @Override
+  public Node visit(InsExpression instruction) {
+    return new InsExpression(
+            instruction.getPosition().copy(),
+            (Expression) instruction.getExpression().accept(this)
+    );
+  }
+
+  // ##########################
+  // #    Fin Instruction     #
+  // ##########################
 }

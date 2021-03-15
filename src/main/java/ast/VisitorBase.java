@@ -1,6 +1,8 @@
 package ast;
 
 
+import support.Pair;
+
 abstract // TODO: TO REMOVE LATER WHEN THE CLASS IS COMPLETE
 public class VisitorBase<T> implements Visitor<T> {
 
@@ -183,5 +185,124 @@ public class VisitorBase<T> implements Visitor<T> {
     // #####################################################################################################
     // # FIN Bloc Definition de fonction, définition de type, imports, déclarations globales et programmes #
     // #####################################################################################################
+
+    // ##################################
+    // #    Block Declaration Locale    #
+    // #################################
+    /**
+     * @author Letord Baptiste
+     */
+
+    public T visit(Declaration declaration){
+        if(declaration.getExpression().isPresent()){
+            declaration.getType().accept(this);
+            return declaration.getExpression().get().accept(this);
+        }
+        else{
+            return declaration.getType().accept(this);
+        }
+    }
+    // ######################################
+    // #    Fin Block Declaration Locale    #
+    // ######################################
+
+    // ##########################
+    // #    Block Instruction   #
+    // ##########################
+    /**
+     * @author BENAI Mahmoud
+     * @author BONHOMME Hugo
+     * @author BRAHIM AZIB Youssouf
+     * @author VADET Alexandre
+     */
+
+    @Override
+    public T visit(InsFor instruction) {
+        instruction.getDeclaration().accept(this);
+        instruction.getRange().accept(this);
+        instruction.getStep().accept(this);
+        return instruction.getBody().accept(this);
+
+    }
+
+    @Override
+    public T visit(InstForeach instruction) {
+        instruction.getCollection().accept(this);
+        instruction.getType().accept(this);
+        return instruction.getBody().accept(this);
+    }
+
+    @Override
+    public T visit(InsWhile instruction) {
+        if(instruction.getDoWhile()){
+            instruction.getBody().accept(this);
+            return instruction.getCondition().accept(this);
+        }
+        else{
+            instruction.getCondition().accept(this);
+            return instruction.getBody().accept(this);
+        }
+
+    }
+
+    @Override
+    public T visit(InsIf instruction) {
+        instruction.getCondition().accept(this);
+        T curr = null;
+        if(instruction.getElseif().isEmpty()){
+            if(instruction.getBodyElse().isPresent() == false){
+                return instruction.getBody().accept(this);
+            }
+            else{
+                instruction.getBody().accept(this);
+                return instruction.getBodyElse().get().accept(this);
+            }
+        }
+        else{
+            instruction.getBody().accept(this);
+            for(Pair pair : instruction.getElseif()){
+                curr = pair.getFst().accept(this);
+                curr = pair.getSnd().accept(this);
+            }
+            if(instruction.getBodyElse().isPresent() == false){
+                return curr;
+            }
+            else{
+                return instruction.getBodyElse().get().accept(this);
+            }
+        }
+    }
+
+    @Override
+    public T visit(InsAssign instruction) {
+        instruction.getlValue().accept(this);
+        return instruction.getExpression().accept(this);
+    }
+
+    @Override
+    public T visit(InsBlock instruction) {
+        T curr = null;
+        for(Declaration declaration : instruction.getDeclarations()){
+            curr = declaration.accept(this);
+        }
+        for(Instruction instruction1 : instruction.getBody()){
+            curr = instruction1.accept(this);
+        }
+        return curr;
+    }
+
+    @Override
+    public T visit(InsBreak instruction) {
+        return null;
+    }
+
+    @Override
+    public T visit(InsExpression instruction) {
+        return instruction.getExpression().accept(this);
+    }
+
+    // ##########################
+    // #    Fin Instruction     #
+    // ##########################
 
 }
