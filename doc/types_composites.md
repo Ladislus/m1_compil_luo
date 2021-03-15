@@ -19,7 +19,7 @@
     ```
     ```
     monEnregistrement.a = 2;
-    monEnregistrement = {1,2}
+    monEnregistrement = { a = 1, b = 2}
     ```
 
 *   *Les opérations sur les enregistrements*
@@ -65,10 +65,10 @@
 
 *   *Comment écrire le type et écrire les valeurs de ce type ?*
     ```
-    char*int dico monDico = {(“maClé1”, 1),(“maClé2”,2)};
+    char*int dico monDico = {{key = “maClé1”, value = 1},{key = “maClé2”, value = 2}};
     monDico[maCle]
     monDico.put(“uneClé”, 1);
-    monDico.pop(“uneClé”);
+    monDico.get(“uneClé”);
     ```
 
 *   *Les opérations sur les dictionnaires*

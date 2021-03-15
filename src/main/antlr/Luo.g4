@@ -42,21 +42,23 @@ instruction :
         |   block                                                                                                       #InsBlock
         |   Return expression Semicolon?                                                                                #InsReturn
         |   Break Semicolon?                                                                                            #InsBreak
-        |   expression op=(MinusEqual|PlusEqual|MultEqual|DivEqual|EqualSymbol) expression                              #InsAssign
+        |   expression op=(MinusEqual|PlusEqual|MultEqual|DivEqual|EqualSymbol) expression Semicolon?                   #InsAssign
         ;
 expression :
-      Identifier OpenedParenthesis actual_parameter_list? ClosedParenthesis                                             #ExpFunctionCall
+      Identifier OpenedParenthesis expression_list? ClosedParenthesis                                                   #ExpFunctionCall
+    | OpenBracket expression_list? ClosedBracket                                                                        #ExpArrayEnumeration
+    | OpenBracket labeled_expression_list ClosedBracket                                                                 #ExpRecordEnumeration
     | expression OpenSquareBracket expression ClosedSquareBracket                                                       #ExpAccessTabDico
     | expression Dot Identifier                                                                                         #ExpAccessRec
     | OpenedParenthesis expression ClosedParenthesis                                                                    #ExpParenthesis
-    | (PlusPlus | MinusMinus) expression                                                                                #ExpPreUnary
-    | expression op=(PlusPlus | MinusMinus)                                                                                #ExpPostUnary
+    | op=(PlusPlus | MinusMinus) expression                                                                             #ExpPreUnary
+    | expression op=(PlusPlus | MinusMinus)                                                                             #ExpPostUnary
     | expression op=(Multiplication | Division | Modulo) expression                                                     #ExpMulDivMod
     | Minus expression                                                                                                  #ExpOpposite
     | expression op=(Plus | Minus) expression                                                                           #ExpAddSub
     | expression op=(GreaterThan | GreaterOrEqual | LesserThan | LesserOrEqual | Different | Equal ) expression         #ExpComparison
-    | expression op=LogicalAnd expression                                                                                  #ExpAnd
-    | expression op=LogicalOr expression                                                                                   #ExpOr
+    | expression op=LogicalAnd expression                                                                               #ExpAnd
+    | expression op=LogicalOr expression                                                                                #ExpOr
     | Negation expression                                                                                               #ExpNot
     | Integer                                                                                                           #ExpInteger
     | Character                                                                                                         #ExpCharacter
@@ -65,11 +67,15 @@ expression :
     | Identifier                                                                                                        #ExpIdentifier
     ;
 
-actual_parameter_list:
+expression_list:
       ((expression Comma)* expression)
       ;
 
-type_definition : Rec type_expression OpenBracket (type_expression Identifier Semicolon)* ClosedBracket Semicolon?;
+labeled_expression_list:
+      (Identifier EqualSymbol expression Comma)* (Identifier EqualSymbol expression)
+      ;
+
+type_definition : Rec Identifier OpenBracket (type_expression Identifier Semicolon)* ClosedBracket Semicolon?;
 
 type_expression:
       type=(IntegerType|BooleanType|CharType)    #TypPrimitive
@@ -79,8 +85,8 @@ type_expression:
     ;
 
 function_definition :
-      Visibility type_expression Identifier OpenedParenthesis argument_list? ClosedParenthesis block  #DefinitionFunction
-    | Visibility Void Identifier OpenedParenthesis argument_list? ClosedParenthesis OpenBracket block #DefinitionProcedure;
+      Visibility? type_expression Identifier OpenedParenthesis argument_list? ClosedParenthesis block  #DefinitionFunction
+    | Visibility? Void Identifier OpenedParenthesis argument_list? ClosedParenthesis block             #DefinitionProcedure;
 
 Visibility : Public | Private;
 
@@ -138,7 +144,7 @@ NewLine: Escape 'n';
 Tabulation: Escape 't';
 Character: SimpleQuote (NewLine | Tabulation | ~[']) SimpleQuote;
 String: DoubleQuote ~["]* DoubleQuote;
-Integer: (Minus)?Digit+;
+Integer: Digit+;
 Digit:  [0-9];
 Semicolon: ';';
 Map: 'map';

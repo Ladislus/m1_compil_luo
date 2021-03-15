@@ -2,11 +2,11 @@ package ast;
 
 import java.util.List;
 
-public class ExpEnum extends Expression {
+public class ExpArrayEnum extends Expression {
 
     private final List<Expression> elements;
 
-    public ExpEnum(Position position, List<Expression> elements) {
+    public ExpArrayEnum(Position position, List<Expression> elements) {
         this.position = position;
         this.elements = elements;
     }

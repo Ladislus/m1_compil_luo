@@ -9,9 +9,7 @@ dans le fichier [Luo.g4](../src/main/antlr/Luo.g4).
 L'exemple suivant est un programme LUO valide:
 ```
 // Est-ce vraiment un programme valide ?
-// À vérifier si les procédure ont un type de retour void ou 
-// juste aucun type de retour.
-public main((char array) array arguments){
+public void main((char array) array arguments){
   if (length(arguments) == 0)
     print("Il n'y a pas d'arguments passés à ce programme.\n");
   else {

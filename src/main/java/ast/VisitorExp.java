@@ -9,7 +9,8 @@ public interface VisitorExp<T> {
     T visit(ExpVariable variable);
     T visit(ExpRecordAccess record);
     T visit(ExpArrayAccess array);
-    T visit(ExpEnum enumeration);
+    T visit(ExpArrayEnum enumeration);
+    T visit(ExpRecordEnum enumeration);
     T visit(ExpTuple tuple);
     T visit(ExpFunctionCall function);
     T visit(ExpString string);
