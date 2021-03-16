@@ -1,0 +1,37 @@
+import "./rep/algo";
+import "./algo";
+import "/algo";
+import "../rep/rep/algo";
+
+static int x;
+public static int u;
+private static char array y = "50";
+
+rec Person{
+    char array name;
+    int age;
+    }
+
+private int sum(int a, int b){
+    return a + b;
+}
+
+public int incr(int a){
+    return ++a;
+}
+
+int mod(int a, int b){
+    return a % b;
+}
+
+public int main(char array array args){
+    int z = 5;
+    bool b;
+    Person p1 = {"Dupont", 40};
+    print(p1.name, " a ", p1.age, " ans.");
+
+    if (length(args) >= 1){
+        print(args[0]);
+    }
+    return 0;
+}
