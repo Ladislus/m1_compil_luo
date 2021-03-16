@@ -16,9 +16,13 @@ grammar Luo;
 // TO MODIFY:
 program:
    (imports Semicolon?)*
-   (global_declaration |type_definition|function_definition)*
+   (type_definition|function_definition|global_declaration)*
     EOF
    ;
+
+function_definition :
+    Visibility? type_expression Identifier OpenedParenthesis argument_list? ClosedParenthesis block  #DefinitionFunction
+    ;
 
 
 global_declaration: Visibility? Static declaration;
@@ -33,7 +37,7 @@ block : OpenBracket (declaration)* (instruction)* ClosedBracket ;
 instruction :
             If OpenedParenthesis expression ClosedParenthesis instruction
             (Elseif OpenedParenthesis expression ClosedParenthesis instruction)*
-            (Else OpenedParenthesis expression ClosedParenthesis instruction)?                                          #InsIf
+            (Else instruction)?                                                                                         #InsIf
         |   Foreach OpenedParenthesis type_expression Identifier Colon expression ClosedParenthesis instruction         #InsForeach
         |   For OpenedParenthesis declaration Semicolon expression Semicolon expression ClosedParenthesis instruction   #InsFor
         |   While OpenedParenthesis expression ClosedParenthesis instruction                                            #InsWhile
@@ -46,8 +50,8 @@ instruction :
         ;
 expression :
       Identifier OpenedParenthesis expression_list? ClosedParenthesis                                                   #ExpFunctionCall
-    | OpenBracket expression_list? ClosedBracket                                                                        #ExpArrayEnumeration
     | OpenBracket labeled_expression_list ClosedBracket                                                                 #ExpRecordEnumeration
+    | OpenBracket expression_list? ClosedBracket                                                                        #ExpArrayEnumeration
     | expression OpenSquareBracket expression ClosedSquareBracket                                                       #ExpAccessTabDico
     | expression Dot Identifier                                                                                         #ExpAccessRec
     | OpenedParenthesis expression ClosedParenthesis                                                                    #ExpParenthesis
@@ -65,17 +69,17 @@ expression :
     | String                                                                                                            #ExpString
     | Boolean                                                                                                           #ExpBoolean
     | Identifier                                                                                                        #ExpIdentifier
+    | New type_expression OpenedParenthesis expression_list? ClosedParenthesis                                          #ExpNew
     ;
 
 expression_list:
       ((expression Comma)* expression)
       ;
+labeled_expression_list :
+    (Identifier EqualSymbol expression Comma)* (Identifier EqualSymbol expression)
+    ;
 
-labeled_expression_list:
-      (Identifier EqualSymbol expression Comma)* (Identifier EqualSymbol expression)
-      ;
-
-type_definition : Rec Identifier OpenBracket (type_expression Identifier Semicolon)* ClosedBracket Semicolon?;
+type_definition : Rec Identifier OpenBracket (type_expression Identifier Semicolon?)* ClosedBracket Semicolon?;
 
 type_expression:
       type=(IntegerType|BooleanType|CharType)    #TypPrimitive
@@ -84,20 +88,13 @@ type_expression:
     | Identifier                                 #TypIdentifier
     ;
 
-function_definition :
-      Visibility? type_expression Identifier OpenedParenthesis argument_list? ClosedParenthesis block  #DefinitionFunction
-    | Visibility? Void Identifier OpenedParenthesis argument_list? ClosedParenthesis block             #DefinitionProcedure;
-
 Visibility : Public | Private;
 
 argument : type_expression Identifier (Colon expression)? ;
 
 argument_list : (argument Comma)* argument;
 
-imports : Import Path;
-
-// Not perfect, but will do
-Path : DoubleQuote(Identifier?(Current|Division|Parent))*Identifier DoubleQuote;
+imports : Import String;
 
 // Some lexer rules.
 // Additional rules are needed for all the keywords and reserved symbols.
@@ -110,7 +107,6 @@ Path : DoubleQuote(Identifier?(Current|Division|Parent))*Identifier DoubleQuote;
 Static: 'static';
 Public: 'public';
 Private: 'private';
-Void:'void';
 PlusEqual : '+=';
 MinusEqual : '-=';
 MultEqual : '*=';
@@ -150,6 +146,7 @@ Semicolon: ';';
 Map: 'map';
 Rec: 'rec';
 Comma: ',';
+New: 'new';
 Dot: '.';
 OpenBracket: '{';
 ClosedBracket: '}';
