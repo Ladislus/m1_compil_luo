@@ -1,41 +1,67 @@
 package luo;
 
+import ast.Build;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
+import parser.LuoLexer;
+import parser.LuoParser;
 
-import java.io.InputStream;
+import java.io.*;
 
 public class Main {
 
+    private enum Error {
+        SUCCESS,
+        NO_FILE_NAME,
+        FILE_NOT_FOUND,
+        SYNTAX_ERROR
+    }
+
     private static ast.Program buildAst(ParseTree parseTree){
-        // TO COMPLETE
-        return null;
+        ast.Build builder = new Build();
+        return (ast.Program) parseTree.accept(builder);
     }
 
     private static InputStream getInputStream(String fileName){
-        // TO COMPLETE
-        return null;
+        try {
+            if (fileName != null)
+                return new FileInputStream(fileName);
+        } catch (FileNotFoundException e) {
+            System.exit(Error.FILE_NOT_FOUND.ordinal());
+        }
+        return System.in;
     }
 
-    private static ParseTree parse(InputStream inputStream){
-        // TO COMPLETE
-        return null;
+    private static ParseTree parse(InputStream inputStream) throws IOException {
+        CharStream input = CharStreams.fromStream(inputStream);
+        // Creation of the lexer for pico programs
+        LuoLexer lexer = new LuoLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        // Creation of the parser for pico programs
+        LuoParser parser = new LuoParser(tokens);
+        // Parse the input: the result is a parse tree
+        ParseTree tree = parser.program();
+        if (parser.getNumberOfSyntaxErrors() != 0)
+            System.exit(Error.SYNTAX_ERROR.ordinal());
+        return tree;
     }
 
     private static void compile(ast.Program program){
         // TO COMPLETE
     }
 
-    public static void main(String[] arguments) {
+    public static void main(String[] arguments) throws IOException {
         if (arguments.length == 0)
             // No name given to the command line
-            System.exit(1);
+            System.exit(Error.NO_FILE_NAME.ordinal());
         String fileName = arguments[0];
         InputStream inputStream = getInputStream(fileName);
         ParseTree parseTree = parse(inputStream);
         ast.Program program = buildAst(parseTree);
-        compile(program);
+        printer.NotSoPretty.print(program);
         // All is fine
-        System.out.println("Done");
-        System.exit(0);
+        System.exit(Error.SUCCESS.ordinal());
     }
 }
