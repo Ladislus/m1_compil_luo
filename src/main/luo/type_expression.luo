@@ -4,19 +4,19 @@ import "../chemin/vers/UnAutreFichier"
 public static int INT_CONST = 43;
 public static char C_CONST = 'a';
 
-Rec TStruct {
-    char array a[8];
+rec TStruct {
+    char array a;
     int c;
 };
 
-static int array fnc_arr(int i, char c, char array a){
-    int j;
-    TStruct map monDico = {("maCle1", 1),(“maClé2”,2)};
+int fncarr(int i, char c, char array a){
+    int k;
+    TStruct map monDico = { { key = "maCle1", value = 1}, {key = "maCle2", value = 2} };
 
-    if( i < 0 ) j = 3;
-    else j = 2;
+    if( i < 0 ) k = 3;
+    else k = 2;
 
-    for( ; j < INT_CONST; j++){
+    for(int j ; j < INT_CONST; j++){
         if( a[j] == c )
            return i * 5;
         else if( i == 0 )
@@ -26,5 +26,3 @@ static int array fnc_arr(int i, char c, char array a){
     }
      return -1;
 }
-
-

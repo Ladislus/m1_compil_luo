@@ -13,5 +13,5 @@ void main(char array array args)
 {
     int array t = { 12, 22, 5, 1, 6}
     sort(t)
-    for(int i : t) print("t[", i, "]=", t[i])
+    foreach(int i : t) print("t[", i, "]=", t[i])
 }
