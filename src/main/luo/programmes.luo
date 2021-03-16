@@ -27,7 +27,7 @@ int mod(int a, int b){
 public int main(char array array args){
     int z = 5;
     bool b;
-    Person p1 = {"Dupont", 40};
+    Person p1 = { name = "Dupont", age = 40};
     print(p1.name, " a ", p1.age, " ans.");
 
     if (length(args) >= 1){
