@@ -114,13 +114,13 @@ public class VisitorCopy implements Visitor<Node> {
 
   @Override
   public Node visit(TypVariable typRecord) {
-    return new TypPrimitive(typPrimitive.getPosition().copy(), new String(typRecord.getName()));
+    return new TypVariable(typRecord.getPosition().copy(), new String(typRecord.getName()));
   }
 
   @Override
   public Node visit(TypArray typArray) {
     Type type = (Type)typArray.getType().accept(this);
-    return new TypArray(typPrimitive.getPosition().copy(), type);
+    return new TypArray(typArray.getPosition().copy(), type);
   }
 
   // #################################################################################################
