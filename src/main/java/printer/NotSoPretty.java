@@ -151,13 +151,6 @@ public class NotSoPretty {
     }
 
     @Override
-    public List<String> visit(ExpTuple tuple) {
-      String first = stringFlatten(tuple.getFirst().accept(this));
-      String second = stringFlatten(tuple.getSecond().accept(this));
-      return singleton(parenthesis(first + ", " + second));
-    }
-
-    @Override
     public List<String> visit(ExpFunctionCall function) {
       return singleton(function.getName() + parenthesis(visitFlattenNodes(function.getArguments())));
     }
@@ -295,7 +288,7 @@ public class NotSoPretty {
 
     @Override
     public List<String> visit(TypDico typDictionary) {
-      return singleton(typDictionary.getType().accept(this) + " map");
+      return singleton(stringFlatten(typDictionary.getType().accept(this)) + " map");
     }
 
     @Override

@@ -11,7 +11,6 @@ public interface VisitorExp<T> {
     T visit(ExpArrayAccess array);
     T visit(ExpArrayEnum enumeration);
     T visit(ExpRecordEnum enumeration);
-    T visit(ExpTuple tuple);
     T visit(ExpFunctionCall function);
     T visit(ExpString string);
     T visit(ExpNew expression);
