@@ -10,6 +10,14 @@ repositories {
     mavenCentral()
 }
 
+sourceSets {
+    main {
+        java {
+            exclude("ast/VisitorBase.java", "ast/VisitorDefault.java", "ast/VisitorCopy.java")
+        }
+    }
+}
+
 dependencies {
     testImplementation("junit", "junit", "4.12")
     antlr("org.antlr:antlr4:4.9.1")
