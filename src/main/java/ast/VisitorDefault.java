@@ -141,10 +141,14 @@ public class VisitorDefault<T> implements Visitor<T> {
     @Override
     public T visit(Function function) {
         T curr = defaultValue;
-        for (Declaration declaration: function.getParameters())
+        for (Declaration parameter: function.getParameters())
+            curr = parameter.accept(this);
+
+        for (Declaration declaration: function.getBody().getDeclarations())
             curr = declaration.accept(this);
-        for (Instruction instruction: function.getBody().getInstructions())
+        for (Instruction instruction: function.getBody().getBody())
             curr = instruction.accept(this);
+
         return curr;
     }
 

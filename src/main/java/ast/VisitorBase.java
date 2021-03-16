@@ -3,6 +3,8 @@ package ast;
 
 import support.Pair;
 
+import java.util.Objects;
+
 abstract // TODO: TO REMOVE LATER WHEN THE CLASS IS COMPLETE
 public class VisitorBase<T> implements Visitor<T> {
 
@@ -137,10 +139,19 @@ public class VisitorBase<T> implements Visitor<T> {
     @Override
     public T visit(Function function) {
         T curr = null;
-        for (Declaration declaration: function.getParameters())
+        for (Declaration parameter: function.getParameters())
+            curr = parameter.accept(this);
+
+        for (Declaration declaration: function.getBody().getDeclarations())
             curr = declaration.accept(this);
         for (Instruction instruction: function.getBody().getBody())
             curr = instruction.accept(this);
+
+        //todo
+        /*T visited = function.getBody().accept(this);
+        if (!Objects.isNull(visited)){
+            curr = visited;
+        }*/
         return curr;
     }
 

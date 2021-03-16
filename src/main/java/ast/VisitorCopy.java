@@ -136,20 +136,18 @@ public class VisitorCopy implements Visitor<Node> {
 
   @Override
   public Node visit(Function function) {
-    // ToDo: beaucoup de changements à faire à cause de la correction de Function
-    List<Declaration> declarations = new ArrayList<>();
-    for (Declaration declaration : function.getParameters()) {
-      declarations.add((Declaration) declaration.accept(this));
+    List<Declaration> parameters = new ArrayList<>();
+    for (Declaration parameter : function.getParameters()) {
+      parameters.add((Declaration) parameter.accept(this));
     }
+    InsBlock insBlock =(InsBlock) function.getBody().accept(this);
 
-    List<Instruction> instructions = new ArrayList<>();
-    for (Instruction instruction : function.getInstructions()) {
-      instructions.add((Instruction) instruction.accept(this));
-    }
+    Type type = (Type) function.getReturn_type().get().accept(this);
 
-    Type type = (Type) function.getReturn_type().accept(this);
+    Position position = function.getPosition().copy();
 
-    return new Function(instructions, declarations, type, function.getVisibility());
+    return new Function(position, function.getVisibility(),new String(function.getName()),
+            parameters,insBlock, Optional.of(type));
   }
 
   @Override
@@ -158,7 +156,8 @@ public class VisitorCopy implements Visitor<Node> {
     for (Declaration declaration : typeDefinition.getDeclarations()) {
       declarations.add((Declaration) declaration.accept(this));
     }
-    return new TypeDefinition(typeDefinition.position.copy(), new String(typeDefinition.getName()), declarations);
+    return new TypeDefinition(typeDefinition.position.copy(), new String(typeDefinition.getName()),
+            declarations);
   }
 
   @Override
@@ -198,7 +197,8 @@ public class VisitorCopy implements Visitor<Node> {
       functionList.add((Function) function.accept(this));
     }
 
-    return new Program(program.position.copy(), importList, globalDeclarationList, typeDefinitionList, functionList);
+    return new Program(program.position.copy(), importList, globalDeclarationList,
+            typeDefinitionList, functionList);
   }
 
   // #####################################################################################################
