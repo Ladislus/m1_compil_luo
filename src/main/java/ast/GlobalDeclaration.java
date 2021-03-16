@@ -1,8 +1,5 @@
 package ast;
 
-import javafx.geometry.Pos;
-
-import javax.crypto.spec.PSource;
 import java.util.Optional;
 
 public class GlobalDeclaration extends Declaration {

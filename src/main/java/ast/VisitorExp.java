@@ -14,4 +14,5 @@ public interface VisitorExp<T> {
     T visit(ExpTuple tuple);
     T visit(ExpFunctionCall function);
     T visit(ExpString string);
+    T visit(ExpNew expression);
 }

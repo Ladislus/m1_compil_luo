@@ -1,7 +1,5 @@
 package ast;
 
-import javafx.geometry.Pos;
-
 public class InsFor extends Instruction {
 
     private final Declaration declaration;

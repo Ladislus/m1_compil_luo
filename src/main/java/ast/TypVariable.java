@@ -1,7 +1,5 @@
 package ast;
 
-import javafx.geometry.Pos;
-
 public class TypVariable extends Type {
     private String name;
 

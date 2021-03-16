@@ -2,6 +2,7 @@ package ast;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import parser.LuoBaseVisitor;
 import parser.LuoLexer;
 import parser.LuoParser;
@@ -11,26 +12,53 @@ import support.Pair;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class Build extends LuoBaseVisitor<Node> {
 
   // Building an AST Position from an ANTLR Context
   private static Position position(ParserRuleContext ctx) {
     return new Position(ctx.start.getLine(),
-      ctx.start.getCharPositionInLine());
+            ctx.start.getCharPositionInLine());
   }
 
-  private <T> List<T> makeList(List<? extends ParserRuleContext> contexts) {
+  @SuppressWarnings("unchecked")
+  private <T,TC> List<T> makeList(List<? extends ParserRuleContext> contexts) {
     List<T> nodes = new ArrayList<>();
     for (ParserRuleContext context : contexts)
       nodes.add((T) context.accept(this));
     return nodes;
   }
 
-  private EnumVisibility getVisibility(Token token) {
-    if (token != null && token.getType() == LuoLexer.Private)
-        return EnumVisibility.PRIVATE;
+  @Override
+  public Node visitExpNew(LuoParser.ExpNewContext ctx) {
+    Type type = (Type) ctx.type_expression().accept(this);
+    List<Expression> expressionList = makeList(ctx.expression_list().expression());
+    return new ExpNew(position(ctx), type, expressionList);
+  }
+
+  private EnumVisibility getVisibility(TerminalNode node) {
+    if (node != null && node.getSymbol().getType() == LuoLexer.Private)
+      return EnumVisibility.PRIVATE;
     return EnumVisibility.PUBLIC;
+  }
+
+  @Override
+  public Node visitExpArrayEnumeration(LuoParser.ExpArrayEnumerationContext ctx) {
+    List<Expression> expressions = makeList(ctx.expression_list().expression());
+    return new ExpArrayEnum(position(ctx), expressions);
+  }
+
+  @Override
+  public Node visitExpRecordEnumeration(LuoParser.ExpRecordEnumerationContext ctx) {
+    List<Pair<String, Expression>> record = new ArrayList<>();
+    int length = ctx.labeled_expression_list().expression().size();
+    for(int counter = 0; counter < length; counter ++){
+      String field = ctx.labeled_expression_list().Identifier(counter).getText();
+      Expression expression = (Expression) ctx.labeled_expression_list().expression(counter).accept(this);
+      record.add(new Pair<>(field, expression));
+    }
+    return new ExpRecordEnum(position(ctx), record);
   }
 
   @Override
@@ -49,7 +77,7 @@ public class Build extends LuoBaseVisitor<Node> {
     String variable = declaration.getVariable();
     Position position = position(ctx);
     Optional<Expression> optionalExpression = declaration.getExpression();
-    EnumVisibility visibility = getVisibility(ctx.Visibility().getSymbol());
+    EnumVisibility visibility = getVisibility(ctx.Visibility());
     return new GlobalDeclaration(position, visibility, type, variable, optionalExpression);
   }
 
@@ -78,7 +106,7 @@ public class Build extends LuoBaseVisitor<Node> {
   @Override
   public Node visitInsIf(LuoParser.InsIfContext ctx) {
     List<Expression> expressions = makeList(ctx.expression());
-    List<Instruction> instructions = makeList(ctx.expression());
+    List<Instruction> instructions = makeList(ctx.instruction());
 
     int countElseif = ctx.Elseif().size();
     int countElse = ctx.Else() == null ? 0 : 1;
@@ -209,29 +237,59 @@ public class Build extends LuoBaseVisitor<Node> {
     return new ExpBinaryOperation(position(ctx), left, getBinaryOp(ctx.op), right);
   }
 
+  private String escaping(String input){
+    return input.replace("\\n", "\n")
+            .replace("\\t", "\t")
+            .replace("\\0", "\0")
+            .replace("\\\"", "\"")
+            .replace("\\'", "'")
+            .replace("\\\\", "\\");
+  }
+
+  // The char constants are represented in the ParseTree by
+  // a string. For example, if the NAP program contains '\n'
+  // the ParseTree will contain a ECharContext node with text "'\\n'"
+  // We have only a few escaped characters in nap.g4:
+  // \n, \t, \\, \', \", \0
   @Override
   public Node visitExpCharacter(LuoParser.ExpCharacterContext ctx) {
-    return super.visitExpCharacter(ctx);
+    char character = escaping(ctx.getText()).charAt(1);
+    return new ExpCharacter(position(ctx), character);
   }
 
   @Override
   public Node visitExpFunctionCall(LuoParser.ExpFunctionCallContext ctx) {
-    return super.visitExpFunctionCall(ctx);
+    String name = ctx.Identifier().getText();
+    List<Expression> arguments = makeList(ctx.expression_list().expression());
+    return new ExpFunctionCall(position(ctx), name, arguments);
+  }
+
+  private EnumUnaryOp getUnaryOp(Token token){
+    switch(token.getType()){
+      case LuoLexer.Minus: return EnumUnaryOp.MINUS;
+      case LuoLexer.Negation: return EnumUnaryOp.NOT;
+      case LuoLexer.PlusPlus:Plus: return EnumUnaryOp.INC;
+      case LuoLexer.MinusMinus: return EnumUnaryOp.DEC;
+    }
+    throw new Error("ast.Build: Undefined unary operation");
   }
 
   @Override
   public Node visitExpPreUnary(LuoParser.ExpPreUnaryContext ctx) {
-    return super.visitExpPreUnary(ctx);
+    Expression expression = (Expression) ctx.expression().accept(this);
+    return new ExpUnaryOperation(position(ctx), getUnaryOp(ctx.op), expression);
   }
 
   @Override
   public Node visitExpOpposite(LuoParser.ExpOppositeContext ctx) {
-    return super.visitExpOpposite(ctx);
+    Expression expression = (Expression) ctx.expression().accept(this);
+    return new ExpUnaryOperation(position(ctx), EnumUnaryOp.MINUS, expression);
   }
 
   @Override
   public Node visitExpPostUnary(LuoParser.ExpPostUnaryContext ctx) {
-    return super.visitExpPostUnary(ctx);
+    Expression expression = (Expression) ctx.expression().accept(this);
+    return new ExpUnaryOperation(position(ctx), expression, getUnaryOp(ctx.op));
   }
 
   @Override
@@ -243,12 +301,15 @@ public class Build extends LuoBaseVisitor<Node> {
 
   @Override
   public Node visitExpInteger(LuoParser.ExpIntegerContext ctx) {
-    return super.visitExpInteger(ctx);
+    int value = Integer.parseInt(ctx.Integer().getText());
+    return new ExpInteger(position(ctx), value);
   }
 
   @Override
   public Node visitExpAccessTabDico(LuoParser.ExpAccessTabDicoContext ctx) {
-    return super.visitExpAccessTabDico(ctx);
+    Expression collection = (Expression) ctx.expression(0).accept(this);
+    Expression index = (Expression) ctx.expression(1).accept(this);
+    return new ExpArrayAccess(position(ctx), collection, index);
   }
 
   @Override
@@ -277,89 +338,125 @@ public class Build extends LuoBaseVisitor<Node> {
 
   @Override
   public Node visitExpNot(LuoParser.ExpNotContext ctx) {
-    return super.visitExpNot(ctx);
+    Expression expression = (Expression) ctx.expression().accept(this);
+    return new ExpUnaryOperation(position(ctx), EnumUnaryOp.NOT, expression);
   }
 
   @Override
   public Node visitExpBoolean(LuoParser.ExpBooleanContext ctx) {
-
-    return super.visitExpBoolean(ctx);
+    return new ExpBoolean(position(ctx), ctx.Boolean().getSymbol().equals("true"));
   }
 
   @Override
   public Node visitExpString(LuoParser.ExpStringContext ctx) {
-    return super.visitExpString(ctx);
-  }
-
-  @Override
-  public Node visitActual_parameter_list(LuoParser.Actual_parameter_listContext ctx) {
-    return super.visitActual_parameter_list(ctx);
+    String escaped = escaping(ctx.getText());
+    return new ExpString(position(ctx), escaped.substring(1, escaped.length()-1));
   }
 
   @Override
   public Node visitType_definition(LuoParser.Type_definitionContext ctx) {
-    return super.visitType_definition(ctx);
+    String name = ctx.Identifier(0).getText();
+    List<String> fieldNames =
+            ctx.Identifier()
+                    .subList(1, ctx.Identifier().size())
+                    .stream()
+                    .map((t)->t.getText())
+                    .collect(Collectors.toList());
+    List<Type> fieldTypes =
+            ctx.type_expression()
+                    .stream()
+                    .map((te)->(Type)te.accept(this))
+                    .collect(Collectors.toList());
+    assert fieldTypes.size() == fieldNames.size() : "ast.Build: type definition, field and type lists mismatch";
+    List<Declaration> fields = new ArrayList<>();
+    for(int counter = 0; counter < fieldNames.size(); counter++)
+      fields.add(new Declaration(position(ctx.type_expression(counter)), fieldTypes.get(counter), fieldNames.get(counter)));
+    return new TypeDefinition(position(ctx), name, fields);
   }
 
   @Override
   public Node visitTypArray(LuoParser.TypArrayContext ctx) {
-    return super.visitTypArray(ctx);
+    Type type = (Type) ctx.type_expression().accept(this);
+    return new TypArray(position(ctx), type);
+  }
+
+  private EnumPrimitiveType getPrimitiveType(Token token){
+    switch(token.getText()){
+      case "int" : return EnumPrimitiveType.INT;
+      case "char" : return  EnumPrimitiveType.CHAR;
+      case "bool" : return  EnumPrimitiveType.BOOL;
+    }
+    throw new Error("ast.Build: unknown primitive type");
   }
 
   @Override
   public Node visitTypPrimitive(LuoParser.TypPrimitiveContext ctx) {
-    return super.visitTypPrimitive(ctx);
+    return new TypPrimitive(position(ctx), getPrimitiveType(ctx.type));
   }
 
   @Override
   public Node visitTypMap(LuoParser.TypMapContext ctx) {
-    return super.visitTypMap(ctx);
+    Position position = position(ctx);
+    Type type = new TypVariable(position, ctx.Identifier().getText());
+    return new TypDico(position(ctx), type);
   }
 
   @Override
   public Node visitTypIdentifier(LuoParser.TypIdentifierContext ctx) {
-    return super.visitTypIdentifier(ctx);
+    return new TypVariable(position(ctx), ctx.Identifier().getText());
   }
 
   @Override
   public Node visitDefinitionFunction(LuoParser.DefinitionFunctionContext ctx) {
-    EnumVisibility visibility = getVisibility(ctx.Visibility().getSymbol());
+    EnumVisibility visibility = getVisibility(ctx.Visibility());
     Type returnType = (Type) ctx.type_expression().accept(this);
     String name = ctx.Identifier().getText();
-    List<Declaration> arguments = makeArgumentList(ctx.argument_list());
+    List<Declaration> arguments = makeList(ctx.argument_list().argument());
     InsBlock body = (InsBlock) ctx.block().accept(this);
     return new Function(position(ctx), visibility, name, arguments, body, Optional.of(returnType));
   }
 
   @Override
-  public Node visitDefinitionProcedure(LuoParser.DefinitionProcedureContext ctx) {
-    EnumVisibility visibility = getVisibility(ctx.Visibility().getSymbol());
-    String name = ctx.Identifier().getText();
-    List<Declaration> arguments = makeArgumentList(ctx.argument_list());
-    InsBlock body = (InsBlock) ctx.block().accept(this);
-    return new Function(position(ctx), visibility, name, arguments, body, Optional.empty());
+  public Node visitArgument(LuoParser.ArgumentContext ctx) {
+    return makeArgument(ctx);
   }
 
   private Declaration makeArgument(LuoParser.ArgumentContext ctx) {
     Type type = (Type) ctx.type_expression().accept(this);
     String variable = ctx.Identifier().getText();
     Optional<Expression> expression =
-      ctx.expression() == null ? Optional.empty() :
-        Optional.of((Expression) ctx.expression().accept(this));
+            ctx.expression() == null ? Optional.empty() :
+                    Optional.of((Expression) ctx.expression().accept(this));
     return new Declaration(position(ctx), type, variable, expression);
   }
 
-
   private List<Declaration> makeArgumentList(LuoParser.Argument_listContext ctx) {
-    List<Declaration> arguments = new ArrayList<>();
-    for(LuoParser.ArgumentContext argCtx : ctx.argument())
-      arguments.add(makeArgument(argCtx));
-    return arguments;
+    return ctx.argument().stream()
+            .map(this::makeArgument)
+            .collect(Collectors.toList());
   }
 
   @Override
   public Node visitImports(LuoParser.ImportsContext ctx) {
-    String path = ctx.Path().getText();
+    String path = ctx.String().getText();
     return new Import(position(ctx), path);
+  }
+
+  @Override
+  public Node visitExpression_list(LuoParser.Expression_listContext ctx) {
+    // Should not be called in this visitor
+    throw new Error ("ast.Build: expression_list should not be visited.");
+  }
+
+  @Override
+  public Node visitLabeled_expression_list(LuoParser.Labeled_expression_listContext ctx) {
+    // Should not be called in this visitor
+    throw new Error ("ast.Build: Labeled_expression_list should not be visited.");
+  }
+
+  @Override
+  public Node visitArgument_list(LuoParser.Argument_listContext ctx) {
+    // Should not be called in this visitor
+    throw new Error ("ast.Build: argument_list should not be visited.");
   }
 }

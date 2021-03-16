@@ -1,7 +1,5 @@
 package ast;
 
-import javafx.geometry.Pos;
-
 public class InsWhile extends Instruction {
 
     private final Instruction body;
