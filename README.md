@@ -18,3 +18,34 @@ sources, il sera nécessaire pour vous de créer un nouveau projet
 (New > Project from Version Control) que l'IDE génère ce qui faut 
 d'après les fichiers de configuration.
 
+## Version du 15 mars
+
+Il y a maintenant une classe Main executable qui prend en argument
+un nom de fichier LUO en argument et qui effectue l'analyse syntaxique
+puis qui affiche le fichier. Cet affiche n'est pas un "pretty printer"
+mais plutôt un "ugly printer". Toutefois la sortie du printer est 
+syntaxiquement correcte et peut-être redonnée au compilateur.
+
+Depuis un terminal IntelliJ:
+
+`./gradlew --console=plain --quiet run --args "src/main/luo/helloworld.luo"`
+
+doit donner quelque chose comme :
+
+```
+public static version Version = { major = 1, minor = 0 }
+rec version{
+int major
+int minor
+}
+public void printVersion(Version v)
+{
+print(v.major, ".", v.minor)
+}
+public void main(char array array arguments)
+{
+print("Hello World !\n", "Version: ")
+printVersion(Version)
+print("/n")
+}
+```
