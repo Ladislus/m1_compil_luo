@@ -14,6 +14,9 @@ public class SymbolTable {
     private final List<Pair<String, Signature>> functions = new ArrayList<>();
     private final Map<String, Type> variables = new HashMap<>();
 
+    public void insertFunction(String functionName, Signature functionSignature) { this.functions.add(new Pair<>(functionName, functionSignature)); }
+    public void insertVariable(String variableName, Type variableType) { this.variables.put(variableName, variableType); }
+
     // TODO
     List<Signature> funcLookup(String functionName) { return null; }
     // TODO
