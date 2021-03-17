@@ -2,16 +2,21 @@ package ast;
 
 public class InstForeach extends Instruction{
 
+    private final Declaration declaration;
     private final Expression collection;
-    private final Type type;
-    private final String identifier;
     private final Instruction body;
 
     public InstForeach(Position position, Type type, String identifier, Expression collection, Instruction body){
         this.position = position;
-        this.type = type;
         this.collection = collection;
-        this.identifier = identifier;
+        this.declaration = new Declaration(position, type, identifier);
+        this.body = body;
+    }
+
+    public InstForeach(Position position, Declaration declaration, Expression collection, Instruction body) {
+        this.position = position;
+        this.declaration = declaration;
+        this.collection = collection;
         this.body = body;
     }
 
@@ -19,16 +24,12 @@ public class InstForeach extends Instruction{
         return this.collection;
     }
 
-    public String getIdentifier() {
-        return this.identifier;
+    public Declaration getDeclaration() {
+        return declaration;
     }
 
     public Instruction getBody() {
         return this.body;
-    }
-
-    public Type getType() {
-        return this.type;
     }
 
     @Override

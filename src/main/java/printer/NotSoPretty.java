@@ -226,11 +226,10 @@ public class NotSoPretty {
 
     @Override
     public List<String> visit(InstForeach instruction) {
-      String type = stringFlatten(instruction.getType().accept(this));
-      String variable = instruction.getIdentifier();
+      String declaration = stringFlatten(instruction.getDeclaration().accept(this));
       String collection = stringFlatten(instruction.getCollection().accept(this));
       List<String> body = instruction.getBody().accept(this);
-      body.add(0, "foreach" + parenthesis(type + " " + variable + spaceAround(":") + collection));
+      body.add(0, "foreach" + parenthesis(declaration + spaceAround(":") + collection));
       return body;
     }
 

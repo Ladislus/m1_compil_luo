@@ -272,8 +272,7 @@ public class VisitorCopy implements Visitor<Node> {
   public Node visit(InstForeach instruction) {
     return new InstForeach(
             instruction.getPosition().copy(),
-            (Type) instruction.getType().accept(this),
-            instruction.getIdentifier(),
+            (Declaration) instruction.getDeclaration().accept(this),
             (Expression) instruction.getCollection().accept(this),
             (Instruction) instruction.getBody().accept(this)
     );

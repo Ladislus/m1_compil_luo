@@ -251,8 +251,8 @@ public class VisitorBase<T> implements Visitor<T> {
 
   @Override
   public T visit(InstForeach instruction) {
+    instruction.getDeclaration().accept(this);
     instruction.getCollection().accept(this);
-    instruction.getType().accept(this);
     return instruction.getBody().accept(this);
   }
 
