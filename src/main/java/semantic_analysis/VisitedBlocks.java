@@ -11,7 +11,7 @@ public class VisitedBlocks {
     // the stack. Therefore this stack contains at its top the current
     // visited block, and after its parent block, then its grand-parent
     // block, and so on.
-    private Stack<InsBlock> visitedBlocks;
+    private final Stack<InsBlock> visitedBlocks;
 
     public VisitedBlocks() {
         this.visitedBlocks = new Stack<>();

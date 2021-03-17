@@ -6,6 +6,7 @@ import ast.EnumBinaryOp;
 import java.util.HashMap;
 import java.util.Map;
 
+// TODO ajouter fonctions prédéfinies
 public class Signatures {
     public static final Map<EnumBinaryOp, Signature> binary = buildBinary();
     public static final Map<EnumUnaryOp, Signature> unary = buildUnary();
