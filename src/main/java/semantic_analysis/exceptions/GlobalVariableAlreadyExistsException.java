@@ -1,3 +1,9 @@
 package semantic_analysis.exceptions;
 
-public class GlobalVariableAlreadyExistsException extends Exception {}
+import ast.Position;
+
+public class GlobalVariableAlreadyExistsException extends Exception {
+    public String format(Position pos, String variableName) {
+        return pos + " Global variable '" + variableName + "' already defined";
+    }
+}

@@ -1,3 +1,9 @@
 package semantic_analysis.exceptions;
 
-public class BlockDosentExistsException extends Exception {}
+import ast.Position;
+
+public class BlockDosentExistsException extends Exception {
+    public String format(Position pos) {
+        return pos + "(Compiler) The block dosen't exists in the table";
+    }
+}
