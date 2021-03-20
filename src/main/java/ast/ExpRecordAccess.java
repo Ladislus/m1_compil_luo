@@ -1,5 +1,7 @@
 package ast;
 
+import java.util.Objects;
+
 public class ExpRecordAccess extends Expression {
 
     private final Expression record;
@@ -22,5 +24,18 @@ public class ExpRecordAccess extends Expression {
     @Override
     public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ExpRecordAccess that = (ExpRecordAccess) o;
+        return record.equals(that.record) && field.equals(that.field);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(record, field);
     }
 }

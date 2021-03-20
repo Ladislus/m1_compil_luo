@@ -1,5 +1,7 @@
 package ast;
 
+import java.util.Objects;
+
 public class InsFor extends Instruction {
 
     private final Declaration declaration;
@@ -34,5 +36,18 @@ public class InsFor extends Instruction {
     @Override
     public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        InsFor insFor = (InsFor) o;
+        return declaration.equals(insFor.declaration) && range.equals(insFor.range) && step.equals(insFor.step) && body.equals(insFor.body);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(declaration, range, step, body);
     }
 }

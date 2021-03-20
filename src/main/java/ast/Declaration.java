@@ -5,8 +5,8 @@ import java.util.Optional;
 
 public class Declaration extends Node{
 
-    private Type type;
-    private String variable;
+    private final Type type;
+    private final String variable;
     private final Optional<Expression> expression;
 
     public Declaration(Declaration declaration){

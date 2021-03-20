@@ -1,14 +1,15 @@
 package ast;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 public class Program extends Node{
 
-    private List<Import> imports;
-    private List<GlobalDeclaration> globalDeclarations;
-    private List<TypeDefinition> typeDefinitions;
-    private List<Function> functions;
+    private final List<Import> imports;
+    private final List<GlobalDeclaration> globalDeclarations;
+    private final List<TypeDefinition> typeDefinitions;
+    private final List<Function> functions;
 
     public Program(Position position) {
         this(position,
@@ -46,5 +47,19 @@ public class Program extends Node{
 
     public <T> T accept(Visitor<T> visitor){
         return visitor.visit(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Program program = (Program) o;
+        return imports.equals(program.imports) && globalDeclarations.equals(program.globalDeclarations) && typeDefinitions.equals(program.typeDefinitions) && functions.equals(program.functions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), imports, globalDeclarations, typeDefinitions, functions);
     }
 }

@@ -273,7 +273,7 @@ public class VisitorBase<T> implements Visitor<T> {
     instruction.getCondition().accept(this);
     T curr = null;
     if (instruction.getElseif().isEmpty()) {
-      if (!instruction.getBodyElse().isPresent()) {
+      if (instruction.getBodyElse().isEmpty()) {
         return instruction.getBody().accept(this);
       } else {
         instruction.getBody().accept(this);
@@ -285,7 +285,7 @@ public class VisitorBase<T> implements Visitor<T> {
         pair.getFst().accept(this);
         curr = pair.getSnd().accept(this);
       }
-      if (!instruction.getBodyElse().isPresent()) {
+      if (instruction.getBodyElse().isEmpty()) {
         return curr;
       } else {
         return instruction.getBodyElse().get().accept(this);

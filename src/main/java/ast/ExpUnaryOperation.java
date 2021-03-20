@@ -1,5 +1,7 @@
 package ast;
 
+import java.util.Objects;
+
 public class ExpUnaryOperation extends Expression {
 
     private final Expression expression;
@@ -42,5 +44,18 @@ public class ExpUnaryOperation extends Expression {
     @Override
     public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ExpUnaryOperation that = (ExpUnaryOperation) o;
+        return prefix == that.prefix && expression.equals(that.expression) && operator == that.operator;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(expression, operator, prefix);
     }
 }

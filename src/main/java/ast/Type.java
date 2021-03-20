@@ -1,4 +1,3 @@
 package ast;
 
-public abstract class Type extends Node{
-}
+public abstract class Type extends Node {}

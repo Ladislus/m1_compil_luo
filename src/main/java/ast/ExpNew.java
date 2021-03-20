@@ -1,6 +1,7 @@
 package ast;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ExpNew extends Expression{
     private final Type type;
@@ -23,5 +24,18 @@ public class ExpNew extends Expression{
     @Override
     public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ExpNew expNew = (ExpNew) o;
+        return type.equals(expNew.type) && arguments.equals(expNew.arguments);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, arguments);
     }
 }

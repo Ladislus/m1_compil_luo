@@ -1,6 +1,7 @@
 package ast;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ExpFunctionCall extends Expression {
 
@@ -25,5 +26,18 @@ public class ExpFunctionCall extends Expression {
     @Override
     public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ExpFunctionCall that = (ExpFunctionCall) o;
+        return name.equals(that.name) && arguments.equals(that.arguments);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, arguments);
     }
 }

@@ -1,9 +1,11 @@
 package ast;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public class GlobalDeclaration extends Declaration {
-    private EnumVisibility visibility;
+
+    private final EnumVisibility visibility;
 
     public GlobalDeclaration(Position position, Type type, String variable) {
         super(position, type, variable);
@@ -37,5 +39,19 @@ public class GlobalDeclaration extends Declaration {
     @Override
     public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        GlobalDeclaration that = (GlobalDeclaration) o;
+        return visibility == that.visibility;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), visibility);
     }
 }

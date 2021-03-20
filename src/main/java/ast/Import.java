@@ -1,8 +1,10 @@
 package ast;
 
+import java.util.Objects;
+
 public class Import extends Node{
 
-    private String path;
+    private final String path;
 
     public Import(Position position, String path){
         this.position = position;
@@ -13,4 +15,17 @@ public class Import extends Node{
 
     @Override
     public <T> T accept(Visitor<T> visitor) { return visitor.visit(this); }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Import anImport = (Import) o;
+        return path.equals(anImport.path);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(path);
+    }
 }

@@ -1,5 +1,7 @@
 package ast;
 
+import java.util.Objects;
+
 public class InstForeach extends Instruction{
 
     private final Declaration declaration;
@@ -35,5 +37,18 @@ public class InstForeach extends Instruction{
     @Override
     public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        InstForeach that = (InstForeach) o;
+        return declaration.equals(that.declaration) && collection.equals(that.collection) && body.equals(that.body);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(declaration, collection, body);
     }
 }

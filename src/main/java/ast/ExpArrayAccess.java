@@ -1,5 +1,7 @@
 package ast;
 
+import java.util.Objects;
+
 public class ExpArrayAccess extends Expression {
 
     private final Expression array;
@@ -22,5 +24,18 @@ public class ExpArrayAccess extends Expression {
     @Override
     public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ExpArrayAccess that = (ExpArrayAccess) o;
+        return array.equals(that.array) && index.equals(that.index);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(array, index);
     }
 }

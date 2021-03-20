@@ -2,8 +2,9 @@ package ast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class TypeDefinition extends Node{
+public class TypeDefinition extends Node {
 
     List<Declaration> declarations;
     String name;
@@ -29,5 +30,19 @@ public class TypeDefinition extends Node{
     @Override
     public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        TypeDefinition that = (TypeDefinition) o;
+        return declarations.equals(that.declarations) && name.equals(that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), declarations, name);
     }
 }

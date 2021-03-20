@@ -3,6 +3,7 @@ package ast;
 import support.Pair;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class InsIf extends Instruction{
@@ -55,5 +56,18 @@ public class InsIf extends Instruction{
     @Override
     public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        InsIf insIf = (InsIf) o;
+        return condition.equals(insIf.condition) && body.equals(insIf.body) && elseif.equals(insIf.elseif) && bodyElse.equals(insIf.bodyElse);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(condition, body, elseif, bodyElse);
     }
 }
