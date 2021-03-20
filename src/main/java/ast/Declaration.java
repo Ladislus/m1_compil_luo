@@ -1,14 +1,13 @@
 package ast;
 
-import org.antlr.v4.codegen.model.decl.Decl;
-
+import java.util.Objects;
 import java.util.Optional;
 
 public class Declaration extends Node{
 
     private Type type;
     private String variable;
-    private Optional<Expression> expression;
+    private final Optional<Expression> expression;
 
     public Declaration(Declaration declaration){
         this.position = declaration.position;
@@ -53,5 +52,18 @@ public class Declaration extends Node{
     @Override
     public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Declaration that = (Declaration) o;
+        return type.equals(that.type) && variable.equals(that.variable) && expression.equals(that.expression);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, variable, expression);
     }
 }
