@@ -1,9 +1,6 @@
 package semantic_analysis;
 
-import ast.EnumPrimitiveType;
-import ast.Position;
-import ast.TypPrimitive;
-import ast.Type;
+import ast.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +8,11 @@ import java.util.List;
 public class Signature {
 
     private static final Position placeholderPosition = new Position(-1, -1);
-    public static final TypPrimitive Integer = new TypPrimitive(placeholderPosition, EnumPrimitiveType.INT);
-    public static final TypPrimitive Bool = new TypPrimitive(placeholderPosition, EnumPrimitiveType.BOOL);
-    public static final TypPrimitive Char = new TypPrimitive(placeholderPosition, EnumPrimitiveType.CHAR);
+    public static final Type Integer = new TypPrimitive(placeholderPosition, EnumPrimitiveType.INT);
+    public static final Type Bool = new TypPrimitive(placeholderPosition, EnumPrimitiveType.BOOL);
+    public static final Type Char = new TypPrimitive(placeholderPosition, EnumPrimitiveType.CHAR);
+    public static final Type Void = new TypVariable(placeholderPosition, "void");
+    public static final Type String = new TypArray(placeholderPosition, Signature.Char);
 
     public final static Signature binaryArithmetic =
             buildBinary(Integer,
