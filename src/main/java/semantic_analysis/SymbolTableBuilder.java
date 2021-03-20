@@ -1,9 +1,19 @@
 package semantic_analysis;
 
-import ast.*;
+import ast.Declaration;
+import ast.ExpVariable;
+import ast.Function;
+import ast.GlobalDeclaration;
+import ast.InsBlock;
+import ast.Position;
+import ast.Type;
 import semantic_analysis.exceptions.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class SymbolTableBuilder extends ast.VisitorBase<Void> {
 
@@ -19,7 +29,7 @@ public class SymbolTableBuilder extends ast.VisitorBase<Void> {
             this.table.insertBlock(instruction);
             this.blocks.enter(instruction);
         } catch (BlockAlreadyExistsException e) {
-            e.printStackTrace();
+            this.errors.put(instruction.getPosition(), e.format(instruction.getPosition()));
         }
         return super.visit(instruction);
     }
@@ -33,7 +43,7 @@ public class SymbolTableBuilder extends ast.VisitorBase<Void> {
         try {
             this.table.insertFunction(function.getName(), new Signature(parameters, returnType));
         } catch (FunctionSignatureAlreadyExistsException e) {
-            e.printStackTrace();
+            this.errors.put(function.getPosition(), e.format(function.getPosition(), function.getName()));
         }
         return super.visit(function);
     }
@@ -43,7 +53,7 @@ public class SymbolTableBuilder extends ast.VisitorBase<Void> {
         try {
             this.table.insertGlobalVariable(globalDeclaration.getVariable(), globalDeclaration.getType());
         } catch (GlobalVariableAlreadyExistsException e) {
-            e.printStackTrace();
+            this.errors.put(globalDeclaration.getPosition(), e.format(globalDeclaration.getPosition(), globalDeclaration.getVariable()));
         }
         return super.visit(globalDeclaration);
     }
@@ -55,39 +65,21 @@ public class SymbolTableBuilder extends ast.VisitorBase<Void> {
             throw new RuntimeException();
         try {
             this.table.insertVariable(declaration.getVariable(), current, declaration.getType());
-        } catch (VariableAlreadyExistsInScopeException | BlockDosentExistsException e) {
-            e.printStackTrace();
+        } catch (VariableAlreadyExistsInScopeException e) {
+            this.errors.put(declaration.getPosition(), e.format(declaration.getPosition(), declaration.getVariable()));
+        } catch (BlockDosentExistsException e) {
+            this.errors.put(declaration.getPosition(), e.format(declaration.getPosition()));
         }
         return super.visit(declaration);
     }
 
     @Override
     public Void visit(ExpVariable variable) {
-        // TODO : Copy VisitedBlock, as varLookup empties the variable
-        // TODO : better error management
-        if (this.table.varLookup(variable.getVariable(), this.blocks).isEmpty())
-            this.errors.put(variable.getPosition(), "Variable dosen't exists");
+        try {
+            this.table.varLookup(variable.getVariable(), this.blocks.copy());
+        } catch (VariableDosentExistsException e) {
+            this.errors.put(variable.getPosition(), e.format(variable.getPosition(), variable.getVariable()));
+        }
         return super.visit(variable);
     }
-
-    // TODO implement function
-    @Override
-    public Void visit(ExpFunctionCall function) {
-        if (this.table.funcLookup(function.getName()).isEmpty())
-            this.errors.put(function.getPosition(), "There is no function named " + function.getName());
-        else {
-            List<Type> argumentsType = new ArrayList<>();
-            for (Expression e : function.getArguments()) {
-                // TODO get the type of the expression
-                // argumentsType.add(e.???);
-            }
-            // TODO check if function signature exists
-            // Signature sig = new Signature(argumentsType, ???);
-            // if (!this.table.funcLookup(function.getName()).contains(sig))
-            //    this.errors.put(function.getPosition(), "There is no method with corresponding signature : " + sig);
-        }
-        return super.visit(function);
-    }
-
-    // TODO Expression type checking (can't recover expression type)
 }

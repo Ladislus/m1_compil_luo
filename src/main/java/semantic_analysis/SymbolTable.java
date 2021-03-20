@@ -53,7 +53,7 @@ public class SymbolTable {
         return new ArrayList<>();
     }
 
-    Optional<Type> varLookup(String variable, VisitedBlocks visitedBlocks) {
+    Optional<Type> varLookup(String variable, VisitedBlocks visitedBlocks) throws VariableDosentExistsException {
         while(!visitedBlocks.getStack().empty()) {
             if (this.variables.get(visitedBlocks.current()).containsKey(variable))
                 return Optional.of(this.variables.get(visitedBlocks.current()).get(variable));
@@ -61,6 +61,6 @@ public class SymbolTable {
         }
         if (this.globalVariables.containsKey(variable))
             return Optional.of(this.globalVariables.get(variable));
-        else return Optional.empty();
+        throw new VariableDosentExistsException();
     }
 }

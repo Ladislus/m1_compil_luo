@@ -33,4 +33,10 @@ public class VisitedBlocks {
         return visitedBlocks.peek();
     }
 
+    public VisitedBlocks copy() {
+        VisitedBlocks nv = new VisitedBlocks();
+        for (InsBlock b : this.visitedBlocks)
+            nv.enter(b);
+        return nv;
+    }
 }
