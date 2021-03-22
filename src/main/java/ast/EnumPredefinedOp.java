@@ -28,25 +28,25 @@ public enum EnumPredefinedOp {
     OUTCHAR {
         @Override
         public String toString() {
-            return "printChar";
+            return "print";
         }
     },
     OUTSTRING {
         @Override
         public String toString() {
-            return "printString";
+            return "print";
         }
     },
     OUTINT {
         @Override
         public String toString() {
-            return "printInt";
+            return "print";
         }
     },
     OUTBOOL {
         @Override
         public String toString() {
-            return "printBool";
+            return "print";
         }
     },
     INTTOCHAR {
