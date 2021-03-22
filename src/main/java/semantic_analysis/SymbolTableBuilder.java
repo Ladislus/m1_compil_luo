@@ -49,24 +49,16 @@ public class SymbolTableBuilder extends ast.VisitorBase<Void> {
 
     @Override
     public Void visit(InsBlock instruction) {
-        try {
-            this.current = instruction;
-            this.table.insertBlock(instruction);
-            this.blocks.enter(instruction);
-        } catch (BlockAlreadyExistsException e) {
-//            this.errors.add(e.format(instruction.getPosition()));
-        }
+        this.current = instruction;
+        this.table.insertBlock(instruction);
+        this.blocks.enter(instruction);
         return super.visit(instruction);
     }
 
     @Override
     public Void visit(Function function) {
         this.current = function.getBody();
-        try {
-            this.table.insertBlock(function.getBody());
-        } catch (BlockAlreadyExistsException e) {
-//            this.errors.add(e.format(function.getPosition()));
-        }
+        this.table.insertBlock(function.getBody());
         List<Type> parameters = new ArrayList<>();
         for (Declaration d : function.getParameters())
             parameters.add(d.getType());

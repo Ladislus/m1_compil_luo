@@ -44,12 +44,9 @@ public class SymbolTable {
         else throw new UserTypeAlreadyExistsException();
     }
 
-    public void insertBlock(InsBlock block) throws BlockAlreadyExistsException {
-//        if (this.variables.containsKey(block))
-//            throw new BlockAlreadyExistsException();
+    public void insertBlock(InsBlock block) {
         if (!this.variables.containsKey(block))
             this.variables.put(block, new HashMap<>());
-//        else this.variables.put(block, new HashMap<>());
     }
 
     public void insertFunction(String functionName, Signature functionSignature) throws FunctionSignatureAlreadyExistsException {
