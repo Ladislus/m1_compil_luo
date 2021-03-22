@@ -4,6 +4,7 @@ import ast.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Signature {
 
@@ -54,5 +55,18 @@ public class Signature {
         List<Type> argTypes = new ArrayList<>();
         argTypes.add(type);
         return new Signature(argTypes, rt);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Signature signature = (Signature) o;
+        return argTypes.equals(signature.argTypes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(argTypes);
     }
 }
