@@ -1,9 +1,6 @@
 package semantic_analysis;
 
-import ast.Declaration;
-import ast.InsBlock;
-import ast.Type;
-import ast.TypeDefinition;
+import ast.*;
 import semantic_analysis.exceptions.*;
 import support.Pair;
 
@@ -85,6 +82,9 @@ public class SymbolTable {
     List<Signature> funcLookup(String functionName) {
         if (this.functions.containsKey(functionName))
             return this.functions.get(functionName);
+        for (EnumPredefinedOp op : Signatures.premade.keySet()) {
+            if (functionName.equals(op.toString())) return List.of(Signatures.premade.get(op));
+        }
         return new ArrayList<>();
     }
 
