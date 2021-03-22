@@ -1,16 +1,21 @@
 package semantic_analysis;
 
 import ast.Declaration;
+import ast.ExpFunctionCall;
 import ast.ExpVariable;
 import ast.Function;
 import ast.GlobalDeclaration;
 import ast.InsBlock;
+import ast.Position;
+import ast.Program;
 import ast.Type;
 import ast.TypeDefinition;
 import semantic_analysis.exceptions.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class SymbolTableBuilder extends ast.VisitorBase<Void> {
@@ -18,7 +23,9 @@ public class SymbolTableBuilder extends ast.VisitorBase<Void> {
     private final SymbolTable table = new SymbolTable();
     private final VisitedBlocks blocks = new VisitedBlocks();
     private final List<String> errors = new ArrayList<>();
+
     private InsBlock current;
+    private final Map<String, Position> functionCalls = new HashMap<>();
 
     public void print() {
         this.table.print();
@@ -27,6 +34,17 @@ public class SymbolTableBuilder extends ast.VisitorBase<Void> {
             for (String e : this.errors)
                 System.out.println(e);
         }
+    }
+
+    @Override
+    public Void visit(Program program) {
+        super.visit(program);
+        for (String call : this.functionCalls.keySet()) {
+            if (this.table.funcLookup(call).isEmpty()) {
+                this.errors.add(this.functionCalls.get(call) + " Function " + call + " called, but not defined");
+            }
+        }
+        return null;
     }
 
     @Override
@@ -99,6 +117,12 @@ public class SymbolTableBuilder extends ast.VisitorBase<Void> {
             this.errors.add(e.format(variable.getPosition(), variable.getVariable()));
         }
         return super.visit(variable);
+    }
+
+    @Override
+    public Void visit(ExpFunctionCall function) {
+        this.functionCalls.put(function.getName(), function.getPosition());
+        return super.visit(function);
     }
 
     @Override
