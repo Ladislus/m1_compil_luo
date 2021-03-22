@@ -53,6 +53,9 @@ public class SymbolTable {
     }
 
     public void insertFunction(String functionName, Signature functionSignature) throws FunctionSignatureAlreadyExistsException {
+        for (EnumPredefinedOp op : Signatures.premade.keySet())
+            if (op.toString().equals(functionName) && Signatures.premade.get(op).equals(functionSignature))
+                throw new FunctionSignatureAlreadyExistsException();
         if (this.functions.containsKey(functionName)) {
             if (!this.functions.get(functionName).contains(functionSignature))
                 this.functions.get(functionName).add(functionSignature);
@@ -80,12 +83,12 @@ public class SymbolTable {
     }
 
     List<Signature> funcLookup(String functionName) {
+        List<Signature> signs = new ArrayList<>();
+        for (EnumPredefinedOp op : Signatures.premade.keySet())
+            if (functionName.equals(op.toString())) signs.add(Signatures.premade.get(op));
         if (this.functions.containsKey(functionName))
-            return this.functions.get(functionName);
-        for (EnumPredefinedOp op : Signatures.premade.keySet()) {
-            if (functionName.equals(op.toString())) return List.of(Signatures.premade.get(op));
-        }
-        return new ArrayList<>();
+            signs.addAll(this.functions.get(functionName));
+        return signs;
     }
 
     Optional<Type> varLookup(String variable, VisitedBlocks visitedBlocks) throws VariableDosentExistsException {
