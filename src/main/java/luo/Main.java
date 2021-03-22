@@ -7,6 +7,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import parser.LuoLexer;
 import parser.LuoParser;
+import semantic_analysis.SymbolTableBuilder;
 
 import java.io.*;
 
@@ -60,7 +61,13 @@ public class Main {
         InputStream inputStream = getInputStream(fileName);
         ParseTree parseTree = parse(inputStream);
         ast.Program program = buildAst(parseTree);
-        printer.NotSoPretty.print(program);
+//        printer.NotSoPretty.print(program);
+
+        // DEBUG
+        SymbolTableBuilder builder = new SymbolTableBuilder();
+        builder.visit(program);
+        builder.print();
+
         // All is fine
         System.exit(Error.SUCCESS.ordinal());
     }
