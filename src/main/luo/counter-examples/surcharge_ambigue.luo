@@ -1,0 +1,11 @@
+int f(int x){
+    return x
+}
+
+bool f(int x){
+    return x==42
+}
+
+void main(char array array args){
+    print(f(42))
+}

@@ -1,0 +1,5 @@
+static int x = 0
+
+void main(char array array args){
+    int x = 42
+}
