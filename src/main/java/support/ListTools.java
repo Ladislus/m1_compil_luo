@@ -11,6 +11,13 @@ public class ListTools {
     return list;
   }
 
+  public static <T> List<T> two(T t1, T t2){
+    List<T> list = new ArrayList<T>();
+    list.add(t1);
+    list.add(t2);
+    return list;
+  }
+
   public static String commaSeparatedList(List<String> list){
     StringBuilder result = new StringBuilder();
     for (int counter = 0; counter < list.size(); counter++) {

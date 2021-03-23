@@ -7,6 +7,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import parser.LuoLexer;
 import parser.LuoParser;
+import ir.translation.Translate;
 
 import java.io.*;
 
