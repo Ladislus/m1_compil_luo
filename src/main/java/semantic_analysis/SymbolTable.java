@@ -81,12 +81,15 @@ public class SymbolTable {
         this.globalVariables.put(variableName, variableType);
     }
 
-    public void insertVariable(String variableName, InsBlock block, Type variableType) throws VariableAlreadyExistsInScopeException, BlockDosentExistsException {
+    public void insertVariable(String variableName, InsBlock block, Type variableType, VisitedBlocks blocks) throws VariableAlreadyExistsInScopeException, BlockDosentExistsException {
         if (!this.variables.containsKey(block))
             throw new BlockDosentExistsException();
-        if (this.variables.get(block).containsKey(variableName) || this.globalVariables.containsKey(variableName))
-            throw new VariableAlreadyExistsInScopeException();
-        this.variables.get(block).put(variableName, variableType);
+        try {
+            if (this.varLookup(variableName, blocks).isPresent())
+                throw new VariableAlreadyExistsInScopeException();
+        } catch (VariableDosentExistsException e) {
+            this.variables.get(block).put(variableName, variableType);
+        }
     }
 
     List<Signature> funcLookup(String functionName) {

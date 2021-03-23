@@ -77,7 +77,7 @@ public class SymbolTableBuilder extends ast.VisitorBase<Void> {
 
     private void insertVariable(Declaration declaration) {
         try {
-            this.table.insertVariable(declaration.getVariable(), current, declaration.getType());
+            this.table.insertVariable(declaration.getVariable(), current, declaration.getType(), this.blocks.copy());
         } catch (VariableAlreadyExistsInScopeException e) {
             this.errors.add(e.format(declaration.getPosition(), declaration.getVariable()));
         } catch (BlockDosentExistsException e) {
@@ -113,7 +113,9 @@ public class SymbolTableBuilder extends ast.VisitorBase<Void> {
         this.current = instruction;
         this.table.insertBlock(instruction);
         this.blocks.enter(instruction);
-        return super.visit(instruction);
+        Void v = super.visit(instruction);
+        this.blocks.exit();
+        return v;
     }
 
     @Override
