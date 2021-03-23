@@ -24,13 +24,17 @@ public class TypPrimitive extends Type {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
         TypPrimitive that = (TypPrimitive) o;
-        return type == that.type;
+        return this.type == that.type;
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), type);
+    }
+
+    @Override
+    public String toString() {
+        return this.type.toString();
     }
 }

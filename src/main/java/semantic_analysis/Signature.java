@@ -5,6 +5,7 @@ import ast.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Signature {
 
@@ -62,11 +63,16 @@ public class Signature {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Signature signature = (Signature) o;
-        return argTypes.equals(signature.argTypes);
+        return this.argTypes.equals(signature.argTypes);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(argTypes);
+    }
+
+    @Override
+    public String toString() {
+        return "(" + this.argTypes.stream().map(Object::toString).collect(Collectors.joining(" ")) + ") -> " + this.returnType;
     }
 }

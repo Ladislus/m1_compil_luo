@@ -56,7 +56,8 @@ public class SymbolTable {
         if (this.functions.containsKey(functionName)) {
             if (!this.functions.get(functionName).contains(functionSignature))
                 this.functions.get(functionName).add(functionSignature);
-            else throw new FunctionSignatureAlreadyExistsException();
+            else
+                throw new FunctionSignatureAlreadyExistsException();
         }
         else {
             List<Signature> elem = new ArrayList<>();
