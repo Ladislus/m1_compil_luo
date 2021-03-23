@@ -122,8 +122,11 @@ public class SymbolTableBuilder extends ast.VisitorBase<Void> {
     public Void visit(Function function) {
         this.current = function.getBody();
         this.table.insertBlock(function.getBody());
+        this.blocks.enter(function.getBody());
         this.insertFunction(function);
-        return super.visit(function);
+        Void v = super.visit(function);
+        this.blocks.exit();
+        return v;
     }
 
     @Override
