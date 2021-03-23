@@ -1,15 +1,6 @@
 package semantic_analysis;
 
-import ast.Declaration;
-import ast.ExpFunctionCall;
-import ast.ExpVariable;
-import ast.Function;
-import ast.GlobalDeclaration;
-import ast.InsBlock;
-import ast.Position;
-import ast.Program;
-import ast.Type;
-import ast.TypeDefinition;
+import ast.*;
 import semantic_analysis.exceptions.*;
 
 import java.util.ArrayList;
@@ -94,11 +85,10 @@ public class SymbolTableBuilder extends ast.VisitorBase<Void> {
     }
 
     private void verifyCalls() {
-        for (String call : this.functionCalls.keySet()) {
-            if (this.table.funcLookup(call).isEmpty()) {
-                this.errors.add(this.functionCalls.get(call) + " Function " + call + " called, but not defined");
-            }
-        }
+        for (String call : this.functionCalls.keySet())
+            if (!call.equals(EnumPredefinedOp.LENGTH.toString()) && !call.equals(EnumPredefinedOp.FREE.toString()))
+                if (this.table.funcLookup(call).isEmpty())
+                    this.errors.add(this.functionCalls.get(call) + " Function " + call + " called, but not defined");
     }
 
     @Override
