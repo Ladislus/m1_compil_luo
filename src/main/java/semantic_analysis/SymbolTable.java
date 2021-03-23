@@ -84,7 +84,7 @@ public class SymbolTable {
     public void insertVariable(String variableName, InsBlock block, Type variableType) throws VariableAlreadyExistsInScopeException, BlockDosentExistsException {
         if (!this.variables.containsKey(block))
             throw new BlockDosentExistsException();
-        if (this.variables.get(block).containsKey(variableName))
+        if (this.variables.get(block).containsKey(variableName) || this.globalVariables.containsKey(variableName))
             throw new VariableAlreadyExistsInScopeException();
         this.variables.get(block).put(variableName, variableType);
     }
