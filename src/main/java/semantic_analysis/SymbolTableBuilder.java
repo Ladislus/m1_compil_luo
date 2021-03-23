@@ -24,6 +24,7 @@ public class SymbolTableBuilder extends ast.VisitorBase<Void> {
     private final VisitedBlocks blocks = new VisitedBlocks();
     private final List<String> errors = new ArrayList<>();
 
+    private String definitionName = null;
     private InsBlock current;
     private final Map<String, Position> functionCalls = new HashMap<>();
 
@@ -38,9 +39,19 @@ public class SymbolTableBuilder extends ast.VisitorBase<Void> {
 
     private void insertUserType(TypeDefinition typeDefinition) {
         try {
-            this.table.insertUserType(typeDefinition);
+            this.table.insertUserType(typeDefinition.getName());
         } catch (UserTypeAlreadyExistsException e) {
             this.errors.add(e.format(typeDefinition.getPosition(), typeDefinition.getName()));
+        }
+    }
+
+    private void insertUserTypeVariable(Declaration declaration) {
+        try {
+            this.table.insertUserTypeVariable(this.definitionName, declaration.getVariable(), declaration.getType());
+        } catch (UserTypeNotDefinedException e) {
+            this.errors.add(e.format(declaration.getPosition(), definitionName));
+        } catch (UserTypeFieldAlreadyExistsException e) {
+            this.errors.add(e.format(declaration.getPosition(), declaration.getVariable()));
         }
     }
 
@@ -121,8 +132,8 @@ public class SymbolTableBuilder extends ast.VisitorBase<Void> {
 
     @Override
     public Void visit(Declaration declaration) {
-        if (Objects.isNull(current))
-            this.insertGlobalVariable(declaration);
+        if (Objects.isNull(current) && !Objects.isNull(this.definitionName))
+            this.insertUserTypeVariable(declaration);
         else
             this.insertVariable(declaration);
         return super.visit(declaration);
@@ -142,7 +153,10 @@ public class SymbolTableBuilder extends ast.VisitorBase<Void> {
 
     @Override
     public Void visit(TypeDefinition typeDefinition) {
+        this.definitionName = typeDefinition.getName();
         this.insertUserType(typeDefinition);
-        return super.visit(typeDefinition);
+        Void v = super.visit(typeDefinition);
+        this.definitionName = null;
+        return v;
     }
 }

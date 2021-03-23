@@ -34,15 +34,24 @@ public class SymbolTable {
         }
     }
 
-    public void insertUserType(TypeDefinition typedef) throws UserTypeAlreadyExistsException {
-        if (!this.userTypes.containsKey(typedef.getName())) {
-            List<Pair<String, Type>> types = new ArrayList<>();
-            for (Declaration d : typedef.getDeclarations())
-                types.add(new Pair<>(d.getVariable(), d.getType()));
-            this.userTypes.put(typedef.getName(), types);
-        }
+    public void insertUserType(String typeName) throws UserTypeAlreadyExistsException {
+        if (!this.userTypes.containsKey(typeName))
+            this.userTypes.put(typeName, new ArrayList<>());
         else throw new UserTypeAlreadyExistsException();
     }
+
+    public void insertUserTypeVariable(String typeName, String variableName, Type variableType) throws UserTypeNotDefinedException, UserTypeFieldAlreadyExistsException {
+        if (!this.userTypes.containsKey(typeName))
+            throw new UserTypeNotDefinedException();
+        else {
+            for (Pair<String, Type> p : this.userTypes.get(typeName)) {
+                if (p.getFst().equals(variableName))
+                    throw new UserTypeFieldAlreadyExistsException();
+            }
+            this.userTypes.get(typeName).add(new Pair<>(variableName, variableType));
+        }
+    }
+
 
     public void insertBlock(InsBlock block) {
         if (!this.variables.containsKey(block))
