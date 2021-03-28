@@ -1,5 +1,7 @@
 package ast;
 
+import java.util.Objects;
+
 public class TypVariable extends Type {
     private String name;
 
@@ -12,6 +14,13 @@ public class TypVariable extends Type {
         return name;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TypVariable that = (TypVariable) o;
+        return name.equals(that.name);
+    }
 
     @Override
     public <T> T accept(Visitor<T> visitor) {

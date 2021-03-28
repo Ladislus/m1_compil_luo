@@ -1,5 +1,7 @@
 package ast;
 
+import java.util.Objects;
+
 public class TypArray extends Type {
 
     private Type type;
@@ -11,6 +13,14 @@ public class TypArray extends Type {
 
     public Type getType() {
         return type;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TypArray typArray = (TypArray) o;
+        return type.equals(typArray.type);
     }
 
     @Override
