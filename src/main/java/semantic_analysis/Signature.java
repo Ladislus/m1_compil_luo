@@ -3,10 +3,9 @@ package semantic_analysis;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import ast.EnumPrimitiveType;
-import ast.TypPrimitive;
-import ast.Type;
+import ast.*;
 
 public class Signature {
   private final List<Type> argumentsTypes;
@@ -75,5 +74,14 @@ public class Signature {
     types.add(t1);
     types.add(t2);
     return check(types);
+  }
+
+  public static Signature signatureOf(Function function) {
+    List<Type> argumentTypes =
+      function.getParameters().stream()
+        .map(Declaration::getType)
+        .collect(Collectors.toList());
+    Optional<Type> returnType = function.getReturn_type();
+    return new Signature(argumentTypes, returnType);
   }
 }

@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static semantic_analysis.Signature.signatureOf;
+
 public class SymbolTableBuilder
   extends ast.VisitorBase<Void> {
 
@@ -37,16 +39,6 @@ public class SymbolTableBuilder
       .map((decl)-> new Pair<>(decl.getVariable(), decl.getType()))
       .collect(Collectors.toList());
   }
-
-  private static Signature signatureOf(Function function) {
-    List<Type> argumentTypes =
-      function.getParameters().stream()
-        .map(Declaration::getType)
-        .collect(Collectors.toList());
-    Optional<Type> returnType = function.getReturn_type();
-    return new Signature(argumentTypes, returnType);
-  }
-
 
   @Override
   public Void visit(Function function) {

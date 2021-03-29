@@ -13,7 +13,7 @@ repositories {
 sourceSets {
     main {
         java {
-            exclude("ast/VisitorDefault.java", "ast/VisitorCopy.java")
+            exclude("ast/VisitorCopy.java")
         }
     }
 }
