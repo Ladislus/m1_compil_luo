@@ -1,23 +1,21 @@
 package ast;
 
-import java.util.List;
-
 public class ExpNew extends Expression{
     private final Type type;
-    private final List<Expression> arguments;
+    private final Expression argument;
 
     public Type getType() {
         return type;
     }
 
-    public List<Expression> getArguments() {
-        return arguments;
+    public Expression getArgument() {
+        return argument;
     }
 
-    public ExpNew(Position position, Type type, List<Expression> arguments) {
+    public ExpNew(Position position, Type type, Expression argument) {
         this.position = position;
         this.type = type;
-        this.arguments = arguments;
+        this.argument = argument;
     }
 
     @Override

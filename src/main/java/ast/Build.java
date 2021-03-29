@@ -33,8 +33,8 @@ public class Build extends LuoBaseVisitor<Node> {
   @Override
   public Node visitExpNew(LuoParser.ExpNewContext ctx) {
     Type type = (Type) ctx.type_expression().accept(this);
-    List<Expression> expressionList = makeList(ctx.expression_list().expression());
-    return new ExpNew(position(ctx), type, expressionList);
+    Expression expression = (Expression) ctx.expression().accept(this);
+    return new ExpNew(position(ctx), type, expression);
   }
 
   private EnumVisibility getVisibility(TerminalNode node) {
@@ -411,7 +411,8 @@ public class Build extends LuoBaseVisitor<Node> {
     EnumVisibility visibility = getVisibility(ctx.Visibility());
     Type returnType = (Type) ctx.type_expression().accept(this);
     String name = ctx.Identifier().getText();
-    List<Declaration> arguments = makeList(ctx.argument_list().argument());
+    List<Declaration> arguments =
+      ctx.argument_list() == null ? new ArrayList<>() : makeList(ctx.argument_list().argument());
     InsBlock body = (InsBlock) ctx.block().accept(this);
     return new Function(position(ctx), visibility, name, arguments, body, Optional.of(returnType));
   }
