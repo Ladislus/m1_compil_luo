@@ -8,6 +8,7 @@ import support.ListTools;
 
 import java.util.LinkedList;
 
+//ToDo: these predefined frames were designed for another language, to adapt to LUO
 public class PredefinedFrames
 {
     public static final Frame LENGTH =

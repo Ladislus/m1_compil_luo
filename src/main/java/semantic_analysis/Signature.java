@@ -84,4 +84,13 @@ public class Signature {
     Optional<Type> returnType = function.getReturn_type();
     return new Signature(argumentTypes, returnType);
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Signature signature = (Signature) o;
+    return argumentsTypes.equals(signature.argumentsTypes) && returnType.equals(signature.returnType);
+  }
+
 }

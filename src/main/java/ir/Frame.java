@@ -2,6 +2,7 @@ package ir;
 
 import ir.com.Label;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -82,5 +83,13 @@ public class Frame
 
     public Frame(Label entryPoint, Label exitPoint, List<Register> parameters, List<Boolean> passedByRef) {
         this(entryPoint, exitPoint, parameters, passedByRef, Optional.empty(), 0);
+    }
+
+    public Frame(Label entryPoint, Label exitPoint, List<Register> parameters, Register result) {
+        this(entryPoint, exitPoint, parameters, new ArrayList<>(), Optional.of(result), 0);
+    }
+
+    public Frame(Label entryPoint, Label exitPoint, List<Register> parameters) {
+        this(entryPoint, exitPoint, parameters, new ArrayList<>(), Optional.empty(), 0);
     }
 }
