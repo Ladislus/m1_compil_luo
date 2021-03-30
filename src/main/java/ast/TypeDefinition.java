@@ -12,7 +12,7 @@ public class TypeDefinition extends Node {
     public TypeDefinition(Position position, String name, Declaration declaration){
         this.position = position;
         this.name=name;
-        List<Declaration> listDeclaration = new ArrayList<Declaration>();
+        List<Declaration> listDeclaration = new ArrayList<>();
         listDeclaration.add(declaration);
         this.declarations = listDeclaration;
     }

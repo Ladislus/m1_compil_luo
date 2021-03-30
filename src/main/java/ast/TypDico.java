@@ -16,21 +16,15 @@ public class TypDico extends Type {
     }
 
     @Override
-    public <T> T accept(Visitor<T> visitor) {
-        return visitor.visit(this);
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
         TypDico typDico = (TypDico) o;
         return type.equals(typDico.type);
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), type);
+    public <T> T accept(Visitor<T> visitor) {
+        return visitor.visit(this);
     }
 }

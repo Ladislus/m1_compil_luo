@@ -96,10 +96,7 @@ public class VisitorBase<T> implements Visitor<T> {
   @Override
   public T visit(ExpNew expression) {
     expression.getType().accept(this);
-    T curr = null;
-    for(Expression exp : expression.getArguments())
-      curr = exp.accept(this);
-    return curr;
+    return expression.getArgument().accept(this);
   }
   // ##############################
   // #    Fin Block Expression    #

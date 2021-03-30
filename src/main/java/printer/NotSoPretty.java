@@ -40,8 +40,8 @@ public class NotSoPretty {
     @Override
     public List<String> visit(ExpNew expression) {
       String type = stringFlatten(expression.getType().accept(this));
-      String arguments = visitFlattenNodes(expression.getArguments());
-      return singleton("new " + type + parenthesis(arguments));
+      String argument = stringFlatten(expression.getArgument().accept(this));
+      return singleton("new " + type + parenthesis(argument));
     }
 
     @Override

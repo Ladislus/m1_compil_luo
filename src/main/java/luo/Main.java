@@ -7,6 +7,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import parser.LuoLexer;
 import parser.LuoParser;
+import ir.translation.Translate;
 import semantic_analysis.SymbolTableBuilder;
 
 import java.io.*;
@@ -17,7 +18,8 @@ public class Main {
         SUCCESS,
         NO_FILE_NAME,
         FILE_NOT_FOUND,
-        SYNTAX_ERROR
+        SYNTAX_ERROR,
+        SEMANTIC_ERROR
     }
 
     private static ast.Program buildAst(ParseTree parseTree){
@@ -49,6 +51,15 @@ public class Main {
         return tree;
     }
 
+    private static void analyze(ast.Program program){
+        SymbolTableBuilder builder = new SymbolTableBuilder();
+        program.accept(builder);
+        if (builder.getErrors().hasErrors()){
+            builder.getErrors().print();
+            System.exit(Error.SEMANTIC_ERROR.ordinal());
+        }
+    }
+
     private static void compile(ast.Program program){
         // TO COMPLETE
     }
@@ -61,13 +72,8 @@ public class Main {
         InputStream inputStream = getInputStream(fileName);
         ParseTree parseTree = parse(inputStream);
         ast.Program program = buildAst(parseTree);
-//        printer.NotSoPretty.print(program);
-
-        // DEBUG
-        SymbolTableBuilder builder = new SymbolTableBuilder();
-        builder.visit(program);
-        builder.print();
-
+        analyze(program);
+        printer.NotSoPretty.print(program);
         // All is fine
         System.exit(Error.SUCCESS.ordinal());
     }

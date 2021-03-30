@@ -69,7 +69,7 @@ expression :
     | String                                                                                                            #ExpString
     | Boolean                                                                                                           #ExpBoolean
     | Identifier                                                                                                        #ExpIdentifier
-    | New type_expression OpenedParenthesis expression_list? ClosedParenthesis                                          #ExpNew
+    | New type_expression OpenedParenthesis expression ClosedParenthesis                                          #ExpNew
     ;
 
 expression_list:
@@ -79,7 +79,7 @@ labeled_expression_list :
     (Identifier EqualSymbol expression Comma)* (Identifier EqualSymbol expression)
     ;
 
-type_definition : Rec Identifier OpenBracket (type_expression Identifier Semicolon?)* ClosedBracket Semicolon?;
+type_definition : Rec Identifier OpenBracket (type_expression Identifier Semicolon?)+ ClosedBracket Semicolon?;
 
 type_expression:
       type=(IntegerType|BooleanType|CharType)    #TypPrimitive

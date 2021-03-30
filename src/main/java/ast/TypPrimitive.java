@@ -16,6 +16,14 @@ public class TypPrimitive extends Type {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TypPrimitive that = (TypPrimitive) o;
+        return type == that.type;
+    }
+
+    @Override
     public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
     }

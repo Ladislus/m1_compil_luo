@@ -1,157 +1,177 @@
 package semantic_analysis;
 
 import ast.*;
-import semantic_analysis.exceptions.*;
+import support.Errors;
+import support.ListTools;
+import support.Pair;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
-public class SymbolTableBuilder extends ast.VisitorBase<Void> {
+import static semantic_analysis.Signature.signatureOf;
 
-    private final SymbolTable table = new SymbolTable();
-    private final VisitedBlocks blocks = new VisitedBlocks();
-    private final List<String> errors = new ArrayList<>();
+public class SymbolTableBuilder
+  extends ast.VisitorBase<Void> {
 
-    private String definitionName = null;
-    private InsBlock current;
-    private final Map<String, Position> functionCalls = new HashMap<>();
+  private final SymbolTable symbolTable;
+  private final Errors errors;
+  private final VisitedBlocks visitedBlocks;
 
-    public void print() {
-        this.table.print();
-        if (!this.errors.isEmpty()) {
-            System.out.println("Errors: ");
-            for (String e : this.errors)
-                System.out.println(e);
-        }
+  public SymbolTableBuilder() {
+    this.errors = new Errors();
+    this.symbolTable = new SymbolTable();
+    this.visitedBlocks = new VisitedBlocks();
+  }
+
+  public Errors getErrors() {
+    return errors;
+  }
+
+  public SymbolTable getSymbolTable() throws Exception{
+    if (errors.hasErrors())
+      throw new Exception("Semantic analysis detected errors");
+    return symbolTable;
+  }
+
+  private static List<Pair<String, Type>> fieldsDefinitionOf(TypeDefinition typeDefinition) {
+    return typeDefinition.getDeclarations().stream()
+      .map((decl)-> new Pair<>(decl.getVariable(), decl.getType()))
+      .collect(Collectors.toList());
+  }
+
+  @Override
+  public Void visit(Function function) {
+    String functionName = function.getName();
+    Signature signature = signatureOf(function);
+    if (existsSignatureWithSameArgumentTypes(functionName, signature))
+      errors.add(existsSignatureWithSameArgumentTypesMessage(function.getPosition(), functionName));
+    else
+      symbolTable.addFunction(functionName, signature);
+    addFunctionArgumentsAsLocalVariables(function);
+    function.getBody().accept(this);
+    return null;
+  }
+
+  @Override
+  public Void visit(TypeDefinition typeDefinition) {
+    String typeName = typeDefinition.getName();
+    Position position = typeDefinition.getPosition();
+    if (typeDefinitionNameAlreadyExists(typeDefinition))
+      errors.add(typeDefinitionNameAlreadyExistsMessage(position, typeName));
+    else{
+      if (typeDefinitionFieldsAlreadyUsed(typeDefinition))
+        errors.add(typeDefinitionFieldsAlreadyUsedMessage(position, typeName));
+      else
+      if (typeDefinitionHasDuplicateFields(typeDefinition))
+        errors.add(typeDefinitionHasDuplicateFieldsMessage(position, typeName));
+      symbolTable.addTypeDefinition(typeName, fieldsDefinitionOf(typeDefinition));
     }
+    return null;
+  }
 
-    private void insertUserType(TypeDefinition typeDefinition) {
-        try {
-            this.table.insertUserType(typeDefinition.getName());
-        } catch (UserTypeAlreadyExistsException e) {
-            this.errors.add(e.format(typeDefinition.getPosition(), typeDefinition.getName()));
-        }
-    }
+  private boolean existsSignatureWithSameArgumentTypes(String functionName,
+                                                       Signature signature) {
+    List<Signature> existingSignatures = symbolTable.functionLookup(functionName);
+    return
+      existingSignatures.stream()
+        .anyMatch((sig) -> signature.getArgumentsTypes().equals(sig.getArgumentsTypes()));
+  }
 
-    private void insertUserTypeVariable(Declaration declaration) {
-        try {
-            this.table.insertUserTypeVariable(this.definitionName, declaration.getVariable(), declaration.getType());
-        } catch (UserTypeNotDefinedException e) {
-            this.errors.add(e.format(declaration.getPosition(), definitionName));
-        } catch (UserTypeFieldAlreadyExistsException e) {
-            this.errors.add(e.format(declaration.getPosition(), declaration.getVariable()));
-        }
-    }
+  private String existsSignatureWithSameArgumentTypesMessage(Position position, String functionName){
+    return "At position " + position
+      + " the signature of the function "
+      + functionName + " makes the overloading ambiguous.";
+  }
 
-    private void insertFunction(Function function) {
-        List<Type> parameters = new ArrayList<>();
-        for (Declaration d : function.getParameters())
-            parameters.add(d.getType());
-        Type returnType = function.getReturn_type().isPresent() ? function.getReturn_type().get() : Signature.Void;
-        try {
-            this.table.insertFunction(function.getName(), new Signature(parameters, returnType));
-        } catch (FunctionSignatureAlreadyExistsException e) {
-            this.errors.add(e.format(function.getPosition(), function.getName()));
-        }
-    }
+  private void addFunctionArgumentsAsLocalVariables(Function function) {
+    InsBlock functionBody = function.getBody();
+    symbolTable.createLocalTable(functionBody);
+    visitedBlocks.enter(functionBody);
+    function.getParameters().forEach((declaration -> declaration.accept(this)));
+    visitedBlocks.exit();
+  }
 
-    private void insertGlobalVariable(Declaration globalDeclaration) {
-        try {
-            this.table.insertGlobalVariable(globalDeclaration.getVariable(), globalDeclaration.getType());
-        } catch (GlobalVariableAlreadyExistsException e) {
-            this.errors.add(e.format(globalDeclaration.getPosition(), globalDeclaration.getVariable()));
-        }
-    }
+  public boolean typeDefinitionNameAlreadyExists(TypeDefinition typeDefinition) {
+    String typeName = typeDefinition.getName();
+    Optional<List<Pair<String, Type>>> existingDefinition =
+      symbolTable.typeDefinitionLookup(typeName);
+    return existingDefinition.isPresent();
+  }
+  private String typeDefinitionNameAlreadyExistsMessage(Position position, String typeName) {
+    return "At position " + position
+      + " type " + typeName + " is already defined elsewhere.";
+  }
 
-    private void insertVariable(Declaration declaration) {
-        try {
-            this.table.insertVariable(declaration.getVariable(), current, declaration.getType(), this.blocks.copy());
-        } catch (VariableAlreadyExistsInScopeException e) {
-            this.errors.add(e.format(declaration.getPosition(), declaration.getVariable()));
-        } catch (BlockDosentExistsException e) {
-            this.errors.add(e.format(declaration.getPosition()));
-        }
-    }
+  public boolean typeDefinitionFieldsAlreadyUsed(TypeDefinition typeDefinition) {
+    List<Pair<String, Type>> fieldsDefinition = fieldsDefinitionOf(typeDefinition);
+    List<String> fieldNames = ListTools.getFstList(fieldsDefinition);
+    Optional<Pair<String, List<Pair<String, Type>>>> existingDefinitionWithSameFields =
+      symbolTable.typeNameLookup(fieldNames);
+    return existingDefinitionWithSameFields.isPresent();
+  }
 
-    private void varLookup(ExpVariable variable) {
-        try {
-            this.table.varLookup(variable.getVariable(), this.blocks.copy());
-        } catch (VariableDosentExistsException e) {
-            this.errors.add(e.format(variable.getPosition(), variable.getVariable()));
-        }
-    }
+  private String typeDefinitionFieldsAlreadyUsedMessage(Position position, String typeName) {
+    return "At position " + position
+      + " type " + typeName + " uses the exact same list of"
+      + "  field names than an already defined type.";
+  }
 
-    private void verifyCalls() {
-        for (String call : this.functionCalls.keySet())
-            if (!call.equals(EnumPredefinedOp.LENGTH.toString()) && !call.equals(EnumPredefinedOp.FREE.toString()))
-                if (this.table.funcLookup(call).isEmpty())
-                    this.errors.add(this.functionCalls.get(call) + " Function " + call + " called, but not defined");
-    }
+  public boolean typeDefinitionHasDuplicateFields(TypeDefinition typeDefinition){
+    List<String> fieldNames = ListTools.getFstList(fieldsDefinitionOf(typeDefinition));
+    int size = fieldNames.size();
+    for(int index = 0; index < size; index++)
+      if (fieldNames.subList(index+1, size).contains(fieldNames.get(index)))
+        return true;
+    return false;
+  }
 
-    @Override
-    public Void visit(Program program) {
-        super.visit(program);
-        this.verifyCalls();
-        return null;
-    }
+  private String typeDefinitionHasDuplicateFieldsMessage(Position position, String typeName) {
+    return "At position " + position + " type definition " + typeName
+      + " uses two times the same field name.";
+  }
 
-    @Override
-    public Void visit(InsBlock instruction) {
-        this.current = instruction;
-        this.table.insertBlock(instruction);
-        this.blocks.enter(instruction);
-        Void v = super.visit(instruction);
-        this.blocks.exit();
-        return v;
-    }
+  @Override
+  public Void visit(Import imports) {
+    errors.add("Imports are not supported.");
+    return null;
+  }
 
-    @Override
-    public Void visit(Function function) {
-        this.current = function.getBody();
-        this.table.insertBlock(function.getBody());
-        this.blocks.enter(function.getBody());
-        this.insertFunction(function);
-        Void v = super.visit(function);
-        this.blocks.exit();
-        return v;
+  @Override
+  public Void visit(Declaration declaration) {
+    String variableName = declaration.getVariable();
+    Type variableType = declaration.getType();
+    Optional<Type> existingType =
+      symbolTable.variableLookup(variableName, visitedBlocks);
+    if (ReservedWord.is(variableName))
+      errors.add("At position " + declaration.getExpression()
+        + " variable " + variableName + " has an invalid name. "
+        + " It is a LUO reserved word.");
+    if (existingType.isPresent())
+      errors.add("At position " + declaration.getPosition()
+        + " variable " + variableName + " is already declared.");
+    else {
+      if (visitedBlocks.getStack().isEmpty())
+        symbolTable.addGlobalVariable(variableName, variableType);
+      else
+        symbolTable.addVariable(visitedBlocks.current(), variableName, variableType);
     }
+    return null;
+  }
 
-    @Override
-    public Void visit(GlobalDeclaration globalDeclaration) {
-        this.insertGlobalVariable(globalDeclaration);
-        return super.visit(globalDeclaration);
-    }
+  @Override
+  public Void visit(GlobalDeclaration globalDeclaration) {
+    Declaration declaration = new Declaration(globalDeclaration);
+    declaration.accept(this);
+    return null;
+  }
 
-    @Override
-    public Void visit(Declaration declaration) {
-        if (Objects.isNull(current) && !Objects.isNull(this.definitionName))
-            this.insertUserTypeVariable(declaration);
-        else
-            this.insertVariable(declaration);
-        return super.visit(declaration);
-    }
-
-    @Override
-    public Void visit(ExpVariable variable) {
-        this.varLookup(variable);
-        return super.visit(variable);
-    }
-
-    @Override
-    public Void visit(ExpFunctionCall function) {
-        this.functionCalls.put(function.getName(), function.getPosition());
-        return super.visit(function);
-    }
-
-    @Override
-    public Void visit(TypeDefinition typeDefinition) {
-        this.definitionName = typeDefinition.getName();
-        this.insertUserType(typeDefinition);
-        Void v = super.visit(typeDefinition);
-        this.definitionName = null;
-        return v;
-    }
+  @Override
+  public Void visit(InsBlock block) {
+    symbolTable.createLocalTable(block);
+    visitedBlocks.enter(block);
+    super.visit(block);
+    visitedBlocks.exit();
+    return null;
+  }
 }

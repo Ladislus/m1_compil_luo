@@ -1,24 +1,23 @@
 package ast;
 
-import java.util.List;
 import java.util.Objects;
 
 public class ExpNew extends Expression{
     private final Type type;
-    private final List<Expression> arguments;
+    private final Expression argument;
 
     public Type getType() {
         return type;
     }
 
-    public List<Expression> getArguments() {
-        return arguments;
+    public Expression getArgument() {
+        return argument;
     }
 
-    public ExpNew(Position position, Type type, List<Expression> arguments) {
+    public ExpNew(Position position, Type type, Expression argument) {
         this.position = position;
         this.type = type;
-        this.arguments = arguments;
+        this.argument = argument;
     }
 
     @Override
@@ -31,11 +30,11 @@ public class ExpNew extends Expression{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ExpNew expNew = (ExpNew) o;
-        return type.equals(expNew.type) && arguments.equals(expNew.arguments);
+        return type.equals(expNew.type) && argument.equals(expNew.argument);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, arguments);
+        return Objects.hash(type, argument);
     }
 }

@@ -16,6 +16,14 @@ public class TypArray extends Type {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TypArray typArray = (TypArray) o;
+        return type.equals(typArray.type);
+    }
+
+    @Override
     public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
     }
