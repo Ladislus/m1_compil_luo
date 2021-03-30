@@ -1,7 +1,5 @@
 package ast;
 
-import java.util.Objects;
-
 public class TypPrimitive extends Type {
 
     private final EnumPrimitiveType type;
@@ -26,19 +24,6 @@ public class TypPrimitive extends Type {
     @Override
     public <T> T accept(Visitor<T> visitor) {
         return visitor.visit(this);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TypPrimitive that = (TypPrimitive) o;
-        return this.type == that.type;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), type);
     }
 
     @Override
