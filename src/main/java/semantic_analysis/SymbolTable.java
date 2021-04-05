@@ -2,8 +2,14 @@ package semantic_analysis;
 
 import ast.InsBlock;
 import ast.Type;
+import support.ListTools;
 import support.Pair;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class SymbolTable {
   // functions is the symbol table for LUO function definitions.
@@ -21,6 +27,8 @@ public class SymbolTable {
 
   protected SymbolTable() {
     functions = new HashMap<>();
+    Signatures.premade.forEach((key, value) -> addFunction(key.toString(), value));
+
     blocks = new HashMap<>();
     globalVariables = new HashMap<>();
     userTypes = new ArrayList<>();
@@ -73,9 +81,12 @@ public class SymbolTable {
    * @return A type name and definition, if it exists
    */
   public Optional<Pair<String, List<Pair<String, Type>>>> typeNameLookup(List<String> fieldNames) {
-    return this.userTypes.stream()
-      .filter((Pair<String, ?> pairNameDefinition) -> pairNameDefinition.getSnd().equals(fieldNames))
-      .findFirst();
+//      return this.userTypes.stream()
+//              .filter((Pair<String, ?> pairNameDefinition) -> pairNameDefinition.getSnd().equals(fieldNames))
+//              .findFirst();
+      return this.userTypes.stream()
+              .filter((Pair<String, List<Pair<String, Type>>> pairNameDefinition) -> ListTools.getFstList(pairNameDefinition.getSnd()).equals(fieldNames))
+              .findFirst();
   }
 
   /*
