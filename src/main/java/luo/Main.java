@@ -59,12 +59,10 @@ public class Main {
     private static void analyze(ast.Program program) {
         SymbolTableBuilder builder = new SymbolTableBuilder();
         program.accept(builder);
-        try {
-            typecheck(program, builder.getSymbolTable());
-        } catch (Exception e) {
+        if (builder.getErrors().hasErrors()) {
             builder.getErrors().print();
             System.exit(Error.SEMANTIC_ERROR.ordinal());
-        }
+        } else typecheck(program, builder.getSymbolTable());
     }
 
     private static void typecheck(ast.Program program, SymbolTable symbolTable) {
