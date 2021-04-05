@@ -7,10 +7,14 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import parser.LuoLexer;
 import parser.LuoParser;
-import ir.translation.Translate;
+import semantic_analysis.SymbolTable;
 import semantic_analysis.SymbolTableBuilder;
+import semantic_analysis.TypeChecker;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class Main {
 
@@ -19,7 +23,8 @@ public class Main {
         NO_FILE_NAME,
         FILE_NOT_FOUND,
         SYNTAX_ERROR,
-        SEMANTIC_ERROR
+        SEMANTIC_ERROR,
+        TYPE_ERROR
     }
 
     private static ast.Program buildAst(ParseTree parseTree){
@@ -51,12 +56,23 @@ public class Main {
         return tree;
     }
 
-    private static void analyze(ast.Program program){
+    private static void analyze(ast.Program program) {
         SymbolTableBuilder builder = new SymbolTableBuilder();
         program.accept(builder);
-        if (builder.getErrors().hasErrors()){
+        try {
+            typecheck(program, builder.getSymbolTable());
+        } catch (Exception e) {
             builder.getErrors().print();
             System.exit(Error.SEMANTIC_ERROR.ordinal());
+        }
+    }
+
+    private static void typecheck(ast.Program program, SymbolTable symbolTable) {
+        TypeChecker tc = new TypeChecker(symbolTable);
+        program.accept(tc);
+        if (tc.getErrors().hasErrors()) {
+            tc.getErrors().print();
+            System.exit(Error.TYPE_ERROR.ordinal());
         }
     }
 

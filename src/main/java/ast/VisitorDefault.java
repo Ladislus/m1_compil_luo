@@ -4,7 +4,7 @@ import support.Pair;
 
 public class VisitorDefault<T> implements Visitor<T> {
 
-  private T defaultValue;
+  protected T defaultValue;
 
   public VisitorDefault(T defaultValue) {
     this.defaultValue = defaultValue;
