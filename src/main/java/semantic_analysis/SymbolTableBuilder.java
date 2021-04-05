@@ -28,11 +28,7 @@ public class SymbolTableBuilder
     return errors;
   }
 
-  public SymbolTable getSymbolTable() throws Exception{
-    if (errors.hasErrors())
-      throw new Exception("Semantic analysis detected errors");
-    return symbolTable;
-  }
+  public SymbolTable getSymbolTable() { return symbolTable; }
 
   private static List<Pair<String, Type>> fieldsDefinitionOf(TypeDefinition typeDefinition) {
     return typeDefinition.getDeclarations().stream()
