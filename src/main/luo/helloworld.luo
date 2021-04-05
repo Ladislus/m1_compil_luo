@@ -1,16 +1,19 @@
-rec version {
+rec Version {
     int major;
     int minor;
 }
 
 private void printVersion(Version v){
-    print(v.major, ".", v.minor)
+    print(v.major)
+    print(".")
+    print(v.minor)
 }
 
-private static version Version = { major = 1, minor = 0 }
+private static Version version = { major = 1, minor = 0 }
 
 public void main(char array array arguments){
-    print("Hello World !\n", "Version: ")
-    printVersion(Version)
+    print("Hello World !\n")
+    print("Version: ")
+    printVersion(version)
     print("/n")
 }
