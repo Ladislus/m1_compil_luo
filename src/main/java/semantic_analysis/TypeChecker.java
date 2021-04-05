@@ -4,7 +4,6 @@ import ast.*;
 import support.Errors;
 import support.Pair;
 
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -94,15 +93,19 @@ public class TypeChecker extends VisitorDefault<Optional<ast.Type>> {
         return this.symbolTable.variableLookup(variable.getVariable(), this.visitedBlocks);
     }
 
+    // FIXME
+    // Can't find how to recover "in a clean way" the name of the record
     @Override
     public Optional<Type> visit(ExpRecordAccess record) {
-        // FIXME
-        // Can't find how to recover "in a clean way" the name of the record
-        TypVariable recordType = (TypVariable) record.getRecord().accept(this).get();
-        Optional<List<Pair<String, Type>>> recordFields = this.symbolTable.typeDefinitionLookup(recordType.getName());
+        Optional<Type> recordType = record.getRecord().accept(this);
+        assert recordType.isPresent();
+        TypVariable recordRealType = (TypVariable) recordType.get();
+        Optional<List<Pair<String, Type>>> recordFields = this.symbolTable.typeDefinitionLookup(recordRealType.getName());
         assert recordFields.isPresent();
 
-        return Optional.of(recordFields.get().stream().filter(pair -> pair.getFst().equals(record.getField())).findFirst().get().getSnd());
+        Optional<Pair<String, Type>> correspondingRecordField = recordFields.get().stream().filter(pair -> pair.getFst().equals(record.getField())).findFirst();
+        assert correspondingRecordField.isPresent();
+        return Optional.of(correspondingRecordField.get().getSnd());
     }
 
     @Override
@@ -206,15 +209,16 @@ public class TypeChecker extends VisitorDefault<Optional<ast.Type>> {
 
     @Override
     public Optional<Type> visit(Function function) {
-        function.getParameters().stream().map(decl -> decl.accept(this));
+        function.getParameters().forEach(decl -> decl.accept(this));
         function.getBody().accept(this);
+
         // Result is never used
         return function.getReturn_type();
     }
 
     @Override
     public Optional<Type> visit(TypeDefinition typeDefinition) {
-        typeDefinition.getDeclarations().stream().map(decl -> decl.accept(this));
+        typeDefinition.getDeclarations().forEach(decl -> decl.accept(this));
         // Result is never used
         return this.defaultValue;
     }
@@ -234,10 +238,10 @@ public class TypeChecker extends VisitorDefault<Optional<ast.Type>> {
 
     @Override
     public Optional<Type> visit(Program program) {
-        program.getImports().stream().map(imp -> imp.accept(this));
-        program.getGlobalDeclarations().stream().map(glob -> glob.accept(this));
-        program.getTypeDefinitions().stream().map(typ -> typ.accept(this));
-        program.getFunctions().stream().map(func -> func.accept(this));
+        program.getImports().forEach(imp -> imp.accept(this));
+        program.getGlobalDeclarations().forEach(glob -> glob.accept(this));
+        program.getTypeDefinitions().forEach(typ -> typ.accept(this));
+        program.getFunctions().forEach(func -> func.accept(this));
         // Result is never used
         return this.defaultValue;
     }
@@ -334,7 +338,7 @@ public class TypeChecker extends VisitorDefault<Optional<ast.Type>> {
                     + Signature.Bool + " expected");
 
         instruction.getBody().accept(this);
-        instruction.getElseif().stream().map(elif -> new InsIf(instruction.getPosition(), elif.getFst(), elif.getSnd(), new ArrayList<>()).accept(this));
+        instruction.getElseif().forEach(elif -> new InsIf(instruction.getPosition(), elif.getFst(), elif.getSnd(), new ArrayList<>()).accept(this));
         if (instruction.getBodyElse().isPresent()) instruction.getBodyElse().get().accept(this);
 
         // Result is never used
@@ -343,6 +347,7 @@ public class TypeChecker extends VisitorDefault<Optional<ast.Type>> {
 
     @Override
     public Optional<Type> visit(InsAssign instruction) {
+        System.out.println("InsAssign :" + instruction.getlValue() + ", " + instruction.getExpression());
         Optional<Type> lvalue = instruction.getlValue().accept(this);
         assert lvalue.isPresent();
         Optional<Type> rvalue = instruction.getExpression().accept(this);
@@ -370,7 +375,7 @@ public class TypeChecker extends VisitorDefault<Optional<ast.Type>> {
     @Override
     public Optional<Type> visit(InsBlock instruction) {
         this.visitedBlocks.enter(instruction);
-        instruction.getBody().stream().map(inst -> inst.accept(this));
+        instruction.getBody().forEach(inst -> inst.accept(this));
         this.visitedBlocks.exit();
         return this.defaultValue;
     }
