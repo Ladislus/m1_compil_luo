@@ -97,6 +97,7 @@ public class TypeChecker extends VisitorDefault<Optional<ast.Type>> {
     @Override
     public Optional<Type> visit(ExpRecordAccess record) {
         // FIXME
+        // Can't find how to recover "in a clean way" the name of the record
         TypVariable recordType = (TypVariable) record.getRecord().accept(this).get();
         Optional<List<Pair<String, Type>>> recordFields = this.symbolTable.typeDefinitionLookup(recordType.getName());
         assert recordFields.isPresent();

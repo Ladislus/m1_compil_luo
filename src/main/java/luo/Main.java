@@ -89,7 +89,7 @@ public class Main {
         ParseTree parseTree = parse(inputStream);
         ast.Program program = buildAst(parseTree);
         analyze(program);
-        printer.NotSoPretty.print(program);
+        // printer.NotSoPretty.print(program);
         // All is fine
         System.exit(Error.SUCCESS.ordinal());
     }
