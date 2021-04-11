@@ -1,6 +1,7 @@
 package luo;
 
 import ast.Build;
+import ir.translation.Translate;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -71,11 +72,15 @@ public class Main {
         if (tc.getErrors().hasErrors()) {
             tc.getErrors().print();
             System.exit(Error.TYPE_ERROR.ordinal());
-        }
+        } else irTranslation(program, symbolTable);
     }
 
     private static void compile(ast.Program program){
         // TO COMPLETE
+    }
+
+    private static void irTranslation(ast.Program program, SymbolTable symbolTable) {
+        Translate.run(symbolTable, program);
     }
 
     public static void main(String[] arguments) throws IOException {

@@ -4,11 +4,9 @@ import ast.*;
 import support.Errors;
 import support.Pair;
 
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 //ToDo: should be changed to VisitorBase when finished
