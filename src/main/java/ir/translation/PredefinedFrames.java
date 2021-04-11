@@ -17,13 +17,13 @@ public class PredefinedFrames
                     ListTools.singleton(false),
                     new Register(ir.Type.INT));
 
-//    public static final Frame NEW =
-//            new ir.Frame(Label.named("entryNew"),
-//                    Label.named("exitNew"),
-//                    ListTools.two(new Register(ir.Type.INT), new Register(ir.Type.INT)),
-//                    ListTools.two(false, false),
-//                    new Register(Type.ADDRESS)
-//            );
+    public static final Frame NEW =
+            new ir.Frame(Label.named("entryNew"),
+                    Label.named("exitNew"),
+                    ListTools.two(new Register(ir.Type.INT), new Register(ir.Type.INT)),
+                    ListTools.two(false, false),
+                    new Register(Type.ADDRESS)
+            );
 
     public static final Frame INT_TO_CHAR =
             new ir.Frame(Label.named("entryIntToChar"),
