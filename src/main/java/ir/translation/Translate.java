@@ -9,6 +9,7 @@ import ir.expr.ReadMem;
 import ir.expr.ReadReg;
 import ir.expr.Unary;
 import semantic_analysis.Signature;
+import semantic_analysis.Signatures;
 import semantic_analysis.SymbolTable;
 import semantic_analysis.TypeChecker;
 import support.Errors;
@@ -59,14 +60,11 @@ public class Translate {
 
         @Override
         public ir.Type visit(TypPrimitive type) {
-            switch (type.getType()) {
-                case INT:
-                    return ir.Type.INT;
-                case BOOL:
-                case CHAR:
-                    return ir.Type.BYTE;
-            }
-            throw new Error("Translate: Unknown primitive type, please report");
+            return switch (type.getType()) {
+                case INT -> ir.Type.INT;
+                case BOOL, CHAR -> ir.Type.BYTE;
+            };
+//            throw new Error("Translate: Unknown primitive type, please report");
         }
 
     }
@@ -94,19 +92,19 @@ public class Translate {
 
         @Override
         public Result visit(ExpRecordAccess record) {
-            //ToDo: TP8: implement or add an error "unsupported" (BONUS)
+            errors.add("Translate: Record access not supported " + record.getPosition() + "(Bonus)");
             return null;
         }
 
         @Override
         public Result visit(ExpRecordEnum enumeration) {
-            //ToDo: TP8: implement or add an error "unsupported" (BONUS)
+            errors.add("Translate: Record enumerations not supported " + enumeration.getPosition() + "(Bonus)");
             return null;
         }
 
         @Override
         public Result visit(GlobalDeclaration globalDeclaration) {
-            //ToDo: TP8: implement or add an error "unsupported" (BONUS)
+            errors.add("Translate: Global declarations not supported " + globalDeclaration.getPosition() + "(Bonus)");
             return null;
         }
 
@@ -118,7 +116,7 @@ public class Translate {
 
         @Override
         public Result visit(TypeDefinition typeDefinition) {
-            //ToDo: TP8: implement or add an error "unsupported";
+            errors.add("Translate: Record definition not supported " + typeDefinition.getPosition() + "(Bonus)");
             return null;
         }
 
@@ -204,9 +202,7 @@ public class Translate {
             Result result = exp.getExpression().accept(this);
             EnumUnaryOp op = exp.getOperator();
             switch (op) {
-                case DEC:
-                case INC:
-                    errors.add("Translate: ++ and -- are unsupported");
+                case DEC, INC -> errors.add("Translate: ++ and -- are unsupported");
             }
             ir.expr.Expression newExp = new Unary(result.getExp(), exp.getOperator());
             return new Result(newExp, result.getCode());
@@ -260,7 +256,8 @@ public class Translate {
                 } else
                     assert false : "Internal error: ExpArrAccess not translated to ReadMem in " + stm.getlValue();
             }
-            //ToDo: TP8 implement record access in write mode or error "unsupported"
+            if (stm.getlValue() instanceof ast.ExpRecordAccess)
+                errors.add("Translate: Record access in write mode not supported " + stm.getPosition() + "(Bonus)");
             return new Result(code);
         }
 
@@ -333,17 +330,23 @@ public class Translate {
             List<Signature> signaturesForThisName = symbolTable.functionLookup(exp.getName());
             assert !signaturesForThisName.isEmpty() : "Internal Error: function name not in symbol table: " + exp.getName();
 
-            String functionName = exp.getName();
-            List<Type> argumentTypes = getArgumentTypes(exp.getArguments());
-            int index = indexOfSignature(argumentTypes, signaturesForThisName);
-            assert index != -1 : "Internal Error: no signature with these argument types " + exp.getPosition();
-            Signature signature = signaturesForThisName.get(index);
-            Optional<Type> returnType = signature.getReturnType();
+            // Added special case for LENGTH
+            // FIXME
+            if (exp.getName().equals("length")) {
+                return makeFunCall(Signature.Integer, frames.get(new Pair<>("length", 0)), arguments, code);
+            } else {
+                String functionName = exp.getName();
+                List<Type> argumentTypes = getArgumentTypes(exp.getArguments());
+                int index = indexOfSignature(argumentTypes, signaturesForThisName);
+                assert index != -1 : "Internal Error: no signature with these argument types " + exp.getPosition();
+                Signature signature = signaturesForThisName.get(index);
+                Optional<Type> returnType = signature.getReturnType();
 
-            Frame frame = frames.get(new Pair<>(functionName, index));
-            return returnType
-                    .map(type -> makeFunCall(type, frame, arguments, code))
-                    .orElseGet(() -> makeProcCall(frame, arguments, code));
+                Frame frame = frames.get(new Pair<>(functionName, index));
+                return returnType
+                        .map(type -> makeFunCall(type, frame, arguments, code))
+                        .orElseGet(() -> makeProcCall(frame, arguments, code));
+            }
         }
 
         private Result newArray(Type cellType, Result length) {
@@ -580,6 +583,40 @@ public class Translate {
             public Void visit(Program program) {
                 for (Function function : program.getFunctions())
                     function.accept(this);
+
+                // Added frames for predefined functions
+                frames.put(new Pair<>("length", 0), PredefinedFrames.LENGTH);
+                String[] predefinedFunctions = {"toInt", "toChar", "inputString", "inputInt", "inputChar"};
+                for (String currentPredefinedFunction : predefinedFunctions) {
+                    switch (currentPredefinedFunction) {
+                        case "toInt" -> frames.put(
+                                new Pair<>(
+                                        currentPredefinedFunction,
+                                        symbolTable.functionLookup(currentPredefinedFunction).indexOf(Signatures.premade.get(EnumPredefinedOp.CHARTOINT))),
+                                PredefinedFrames.CHAR_TO_INT);
+                        case "toChar" -> frames.put(
+                                new Pair<>(
+                                        currentPredefinedFunction,
+                                        symbolTable.functionLookup(currentPredefinedFunction).indexOf(Signatures.premade.get(EnumPredefinedOp.INTTOCHAR))),
+                                PredefinedFrames.INT_TO_CHAR);
+                        case "inputString" -> frames.put(
+                                new Pair<>(
+                                        currentPredefinedFunction,
+                                        symbolTable.functionLookup(currentPredefinedFunction).indexOf(Signatures.premade.get(EnumPredefinedOp.INSTRING))),
+                                PredefinedFrames.INPUT_STRING);
+                        case "inputInt" -> frames.put(
+                                new Pair<>(
+                                        currentPredefinedFunction,
+                                        symbolTable.functionLookup(currentPredefinedFunction).indexOf(Signatures.premade.get(EnumPredefinedOp.ININT))),
+                                PredefinedFrames.INPUT_INT);
+                        case "inputChar" -> frames.put(
+                                new Pair<>(
+                                        currentPredefinedFunction,
+                                        symbolTable.functionLookup(currentPredefinedFunction).indexOf(Signatures.premade.get(EnumPredefinedOp.INCHAR))),
+                                PredefinedFrames.INPUT_CHAR);
+                    }
+                }
+
                 return null;
             }
         }
