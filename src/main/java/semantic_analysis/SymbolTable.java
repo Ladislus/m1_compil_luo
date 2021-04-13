@@ -78,26 +78,6 @@ public class SymbolTable {
       .findFirst();
   }
 
-  /*
-  , Position pos, Errors errors){
-    List<Signature> signatures = this.functions.get(functionName);
-    if (signatures == null) {
-      signatures = new ArrayList<>();
-      signatures.add(signature);
-      this.functions.put(functionName, signatures);
-    } else {
-      boolean signatureWithSameArgumentTypes =
-        signatures
-          .stream()
-          .anyMatch((sig) -> signature.getArgumentsTypes().equals(sig.getArgumentsTypes()));
-      if (signatureWithSameArgumentTypes)
-        errors.add("At position " + pos + " the signature of the function "
-          + functionName + " makes the overloading ambiguous.");
-    }
-  }
-  */
-
-
   /**
    * Add a variable's type to the local table of the given block and
    * return the previous type if any.

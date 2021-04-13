@@ -14,6 +14,7 @@ public class Signature {
   private static final ast.Position FakePosition = new ast.Position(-1, -1);
   public static final Type INT = new TypPrimitive(FakePosition, EnumPrimitiveType.INT);
   public static final Type CHAR = new TypPrimitive(FakePosition, EnumPrimitiveType.CHAR);
+  public static final Type STRING = new TypArray(FakePosition, CHAR);
   public static final Type BOOL = new TypPrimitive(FakePosition, EnumPrimitiveType.BOOL);
 
   public List<Type> getArgumentsTypes() {
@@ -40,6 +41,12 @@ public class Signature {
     List<Type> argTypes = new ArrayList<>();
     argTypes.add(type);
     return new Signature(argTypes, Optional.of(rt));
+  }
+
+  public static Signature buildUnaryVoid(Type type) {
+    List<Type> argTypes = new ArrayList<>();
+    argTypes.add(type);
+    return new Signature(argTypes, Optional.empty());
   }
 
   public final static Signature binaryArithmetic =
