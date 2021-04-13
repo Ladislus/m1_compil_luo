@@ -9,6 +9,7 @@ import ir.expr.ReadMem;
 import ir.expr.ReadReg;
 import ir.expr.Unary;
 import semantic_analysis.Signature;
+import semantic_analysis.Signatures;
 import semantic_analysis.SymbolTable;
 import semantic_analysis.TypeChecker;
 import support.Errors;
@@ -19,8 +20,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Translate {
+  public static final Errors errors = new Errors();
   private static final TypeConverter typeConverter = new TypeConverter();
-  private static final Errors errors = new Errors();
 
   /**
    * Convert an Type object to an ir.Type.
@@ -495,12 +496,9 @@ public class Translate {
 
     @Override
     public Result visit(Function fun) {
-      String functionName = fun.getName();
-      List<Signature> signaturesForThisName = symbolTable.functionLookup(functionName);
-      Signature signature = Signature.signatureOf(fun);
-      int index = signaturesForThisName.indexOf(signature);
-      Frame frame = frames.get(new Pair<>(functionName, index));
-      assert frame != null : "Internal Error: no frame for function " + fun.getName();
+      Pair<String, Integer> key = getFunctionKey(fun);
+      Frame frame = frames.get(key);
+      assert frame != null : "Internal Error: no frame for function " + key;
       currentFrame = frame;
       Result result = fun.getBody().accept(this);
       // If result contains an expression part, it is just discarded
@@ -516,6 +514,16 @@ public class Translate {
       for (Function fun : program.getFunctions())
         fun.accept(this);
       return null;
+    }
+
+    private Pair<String, Integer> getFunctionKey(Function function) {
+      return getFunctionKeyByNameSignature(function.getName(), Signature.signatureOf(function));
+    }
+
+    private Pair<String, Integer> getFunctionKeyByNameSignature(String functionName, Signature signature) {
+      List<Signature> signaturesForThisName = symbolTable.functionLookup(functionName);
+      int index = signaturesForThisName.indexOf(signature);
+      return new Pair<>(functionName, index);
     }
 
     private class FramesBuilder extends ast.VisitorBase<Void> {
@@ -540,20 +548,24 @@ public class Translate {
         } else
           frame = new Frame(Label.fresh(), Label.fresh(), parameters);
 
-        String functionName = function.getName();
-        Signature signature = Signature.signatureOf(function);
-        List<Signature> signaturesForThisName = symbolTable.functionLookup(functionName);
-        Integer index = signaturesForThisName.indexOf(signature);
-        frames.put(new Pair<>(functionName, index), frame);
+        frames.put(getFunctionKey(function), frame);
         if (function.getName().equals("main"))
           mainLabel = frame.getEntryPoint();
         return null;
+      }
+
+      private void addPredefinedFunctions() {
+        frames.put(getFunctionKeyByNameSignature("print", Signatures.printChar), PredefinedFrames.PRINT_CHAR);
+        frames.put(getFunctionKeyByNameSignature("print", Signatures.printInt), PredefinedFrames.PRINT_INT);
+        frames.put(getFunctionKeyByNameSignature("print", Signatures.printBool), PredefinedFrames.PRINT_BOOL);
+        frames.put(getFunctionKeyByNameSignature("print", Signatures.printString), PredefinedFrames.PRINT_STRING);
       }
 
       @Override
       public Void visit(Program program) {
         for (Function function : program.getFunctions())
           function.accept(this);
+        addPredefinedFunctions();
         return null;
       }
     }
