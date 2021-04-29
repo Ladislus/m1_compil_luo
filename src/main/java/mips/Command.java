@@ -69,11 +69,11 @@ public class Command implements Visitor<List<String>> {
     private List<String> passArguments(List<ir.expr.Expression> exps) {
         List<String> asmCode = new LinkedList<>();
         List<String> popAndCopy = new LinkedList<>();
-        int counter = exps.size() - 1;
+        int counter = 0;
         for (ir.expr.Expression exp : exps) {
             asmCode.addAll(exp.accept(exprVisitor));
             popAndCopy.addAll(Asm.pop("$a" + counter));
-            counter -= 1;
+            ++counter;
         }
         asmCode.addAll(popAndCopy);
         return asmCode;
@@ -81,8 +81,9 @@ public class Command implements Visitor<List<String>> {
 
     @Override
     public List<String> visit(ProcCall com) {
-        List<String> asmCode = new ArrayList<>();
-        //Todo: à compléter pour le TP9
+        //TODO : parait trop simple
+        List<String> asmCode = passArguments(com.getArguments());
+        asmCode.add(Asm.command("jal " + com.getFrame().getEntryPoint()));
         return asmCode;
     }
 

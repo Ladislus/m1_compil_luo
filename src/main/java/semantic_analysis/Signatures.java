@@ -12,10 +12,10 @@ public class Signatures {
     public static final Map<EnumUnaryOp, Signature> unary = buildUnary();
     public static final Map<EnumPredefinedOp, Signature> premade = buildPremade();
 
-    public static final Signature printChar = Signature.buildUnaryVoid(Signature.CHAR);
-    public static final Signature printInt = Signature.buildUnaryVoid(Signature.INT);
-    public static final Signature printString = Signature.buildUnaryVoid(Signature.STRING);
-    public static final Signature printBool = Signature.buildUnaryVoid(Signature.BOOL);
+    public static final Signature printChar = Signature.buildUnaryVoid(Signature.Char);
+    public static final Signature printInt = Signature.buildUnaryVoid(Signature.Integer);
+    public static final Signature printString = Signature.buildUnaryVoid(Signature.String);
+    public static final Signature printBool = Signature.buildUnaryVoid(Signature.Bool);
 
     public static void addPredefinedSignature(SymbolTable symbolTable){
         symbolTable.addFunction("print", printChar);

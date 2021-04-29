@@ -6,16 +6,17 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import ast.*;
+import ir.expr.Int;
 
 public class Signature {
     private final List<Type> argumentsTypes;
     private final Optional<Type> returnType;
 
-    private static final ast.Position FakePosition = new ast.Position(-1, -1);
-    public static final Type INT = new TypPrimitive(FakePosition, EnumPrimitiveType.INT);
-    public static final Type CHAR = new TypPrimitive(FakePosition, EnumPrimitiveType.CHAR);
-    public static final Type STRING = new TypArray(FakePosition, CHAR);
-    public static final Type BOOL = new TypPrimitive(FakePosition, EnumPrimitiveType.BOOL);
+//    private static final ast.Position FakePosition = new ast.Position(-1, -1);
+//    public static final Type INT = new TypPrimitive(FakePosition, EnumPrimitiveType.INT);
+//    public static final Type CHAR = new TypPrimitive(FakePosition, EnumPrimitiveType.CHAR);
+//    public static final Type STRING = new TypArray(FakePosition, CHAR);
+//    public static final Type BOOL = new TypPrimitive(FakePosition, EnumPrimitiveType.BOOL);
 
     private static final Position placeholderPosition = new Position(-1, -1);
     public static final Type Integer = new TypPrimitive(placeholderPosition, EnumPrimitiveType.INT);
@@ -50,15 +51,15 @@ public class Signature {
     }
 
     public final static Signature binaryArithmetic =
-            buildBinary(INT, INT, INT);
+            buildBinary(Integer, Integer, Integer);
     public final static Signature binaryBoolean =
-            buildBinary(BOOL, BOOL, BOOL);
+            buildBinary(Bool, Bool, Bool);
     public final static Signature unaryArithmetic =
-            buildUnary(INT, INT);
+            buildUnary(Integer, Integer);
     public final static Signature unaryBoolean =
-            buildUnary(BOOL, BOOL);
+            buildUnary(Bool, Bool);
     public final static Signature comparison =
-            buildBinary(INT, INT, BOOL);
+            buildBinary(Integer, Integer, Bool);
 
     public static Signature buildUnary(Type type, Type rt) {
         List<Type> argTypes = new ArrayList<>();
@@ -68,7 +69,7 @@ public class Signature {
 
     public boolean check(List<Type> types) {
         if (types.size() == argumentsTypes.size()) {
-            for (Integer counter = 0; counter < types.size(); counter++)
+            for (int counter = 0; counter < types.size(); counter++)
                 if (!types.get(counter).equals(argumentsTypes.get(counter)))
                     return false;
             return true;
