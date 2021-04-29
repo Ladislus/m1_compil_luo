@@ -333,6 +333,8 @@ public class Translate {
             // Added special case for LENGTH
             // FIXME
             if (exp.getName().equals("length")) {
+                Frame frame = frames.get(new Pair<>("length", 0));
+                assert !Objects.isNull(frame);
                 return makeFunCall(Signature.Integer, frames.get(new Pair<>("length", 0)), arguments, code);
             } else {
                 String functionName = exp.getName();
@@ -342,7 +344,9 @@ public class Translate {
                 Signature signature = signaturesForThisName.get(index);
                 Optional<Type> returnType = signature.getReturnType();
 
+
                 Frame frame = frames.get(new Pair<>(functionName, index));
+                assert !Objects.isNull(frame);
                 return returnType
                         .map(type -> makeFunCall(type, frame, arguments, code))
                         .orElseGet(() -> makeProcCall(frame, arguments, code));
@@ -583,10 +587,10 @@ public class Translate {
             }
 
             private void addPredefinedFunctions() {
-                frames.put(getFunctionKeyByNameSignature("print", Signatures.printChar), PredefinedFrames.PRINT_CHAR);
-                frames.put(getFunctionKeyByNameSignature("print", Signatures.printInt), PredefinedFrames.PRINT_INT);
-                frames.put(getFunctionKeyByNameSignature("print", Signatures.printBool), PredefinedFrames.PRINT_BOOL);
-                frames.put(getFunctionKeyByNameSignature("print", Signatures.printString), PredefinedFrames.PRINT_STRING);
+                frames.put(getFunctionKeyByNameSignature(EnumPredefinedOp.OUTCHAR.toString(), Signatures.premade.get(EnumPredefinedOp.OUTCHAR)), PredefinedFrames.PRINT_CHAR);
+                frames.put(getFunctionKeyByNameSignature(EnumPredefinedOp.OUTINT.toString(), Signatures.premade.get(EnumPredefinedOp.OUTINT)), PredefinedFrames.PRINT_INT);
+                frames.put(getFunctionKeyByNameSignature(EnumPredefinedOp.OUTBOOL.toString(), Signatures.premade.get(EnumPredefinedOp.OUTBOOL)), PredefinedFrames.PRINT_BOOL);
+                frames.put(getFunctionKeyByNameSignature(EnumPredefinedOp.OUTSTRING.toString(), Signatures.premade.get(EnumPredefinedOp.OUTSTRING)), PredefinedFrames.PRINT_STRING);
             }
 
             @Override
