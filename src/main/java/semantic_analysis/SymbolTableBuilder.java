@@ -21,7 +21,6 @@ public class SymbolTableBuilder
     public SymbolTableBuilder() {
         this.errors = new Errors();
         this.symbolTable = new SymbolTable();
-        Signatures.addPredefinedSignature(this.symbolTable);
         this.visitedBlocks = new VisitedBlocks();
     }
 
