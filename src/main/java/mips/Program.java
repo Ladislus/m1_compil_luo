@@ -22,11 +22,11 @@ public class Program {
     public static final Errors errors = new Errors();
 
     public static class AsmWriter extends PrintWriter{
-        
+
         AsmWriter(Path path) throws FileNotFoundException {
             super(new OutputStreamWriter(new FileOutputStream(path.toFile())));
         }
-        
+
         void transferFrom(BufferedReader in) {
             try {
                 while (in.ready())
@@ -35,7 +35,7 @@ public class Program {
                 errors.add("Transferring resources");
             }
         }
-     
+
         void writeAllLines(List<String> lines){
             for (String line : lines)
                 println(line);

@@ -90,7 +90,7 @@ public class Main {
 
     private static Path changeExtension(Path path, String oldExt, String newExt) {
         PathMatcher pm = FileSystems.getDefault()
-          .getPathMatcher("glob:*" + oldExt);
+                .getPathMatcher("glob:*" + oldExt);
         if (pm.matches(path.getFileName())) {
             String nameWithExtension = path.getFileName().toString();
             int endIndex = nameWithExtension.length() - oldExt.length();
@@ -107,7 +107,8 @@ public class Main {
                                 Label mainLabel,
                                 List<Pair<Frame, List<Command>>> fragments) {
         Path newPath = FileSystems.getDefault().getPath(
-          changeExtension(path, ".luo", ".asm").getFileName().toString());
+                changeExtension(path, ".luo", ".asm").getFileName().toString()
+        );
         mips.Program.generate(newPath, mainLabel, fragments);
         ifHasErrorsPrintAndExit(mips.Program.errors, ErrorCode.COMPILATION_ERROR);
     }

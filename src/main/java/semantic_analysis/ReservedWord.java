@@ -9,8 +9,8 @@ public class ReservedWord {
     private static TreeSet<String> buildReserved() {
         //ToDo : check the list is complete for LUO
         String[] reservedWords =
-          { "print", "int_of_char", "char_of_int", "length",
-            "input_char", "input_int", "input_bool", "input_string"};
+                { "print", "int_of_char", "char_of_int", "length",
+                        "input_char", "input_int", "input_bool", "input_string"};
         TreeSet<String> reserved = new TreeSet<>();
         Collections.addAll(reserved, reservedWords);
         return reserved;

@@ -114,7 +114,7 @@ public class TypeChecker extends VisitorDefault<Optional<ast.Type>> {
         Optional<Type> recordType = record.getRecord().accept(this);
         assert recordType.isPresent();
         TypVariable recordRealType = (TypVariable) recordType.get();
-        
+
         // Get all the fields of the given record
         Optional<List<Pair<String, Type>>> recordFields = this.symbolTable.typeDefinitionLookup(recordRealType.getName());
         assert recordFields.isPresent();
@@ -137,7 +137,7 @@ public class TypeChecker extends VisitorDefault<Optional<ast.Type>> {
         // Get the type of the index
         Optional<Type> indexType = array.getIndex().accept(this);
         assert indexType.isPresent();
-        
+
         // if the index is not an integer, error
         if (!indexType.get().equals(Signature.Integer)) {
             this.errors.add("At " + array.getPosition() + ": index has type "
@@ -156,7 +156,7 @@ public class TypeChecker extends VisitorDefault<Optional<ast.Type>> {
         // If the enum isn't empty, get the type of the first element of the enum
         Optional<Type> firstType = enumeration.getElements().get(0).accept(this);
         assert firstType.isPresent();
-        
+
         // Check that all elements of the enum have the same type
         for (Expression exp : enumeration.getElements()) {
             // Get the type of the current element
@@ -168,7 +168,7 @@ public class TypeChecker extends VisitorDefault<Optional<ast.Type>> {
                         + firstType.get() + " and " + currentType.get() + ")");
             }
         }
-        
+
         // Return the type of the first element (which is supposed to be the type of all elements)
         return firstType;
     }
@@ -227,7 +227,7 @@ public class TypeChecker extends VisitorDefault<Optional<ast.Type>> {
         List<Type> expCallArgumentsType = new ArrayList<>();
         for (Expression exp : function.getArguments())
             exp.accept(this).ifPresent(expCallArgumentsType::add);
-        
+
         // Check if a signature correspond
         Optional<Signature> correspondingSignature = signatures.stream().filter((Signature sig) -> sig.check(expCallArgumentsType)).findFirst();
         // If none correspond, error
@@ -309,11 +309,11 @@ public class TypeChecker extends VisitorDefault<Optional<ast.Type>> {
         if (returnType.isPresent() && function.getReturn_type().isEmpty())
             this.errors.add("At " + function.getPosition() + ": No return expected, but given "
                     + returnType.get());
-        // If no return type was given, but one was expected, error
+            // If no return type was given, but one was expected, error
         else if (returnType.isEmpty() && function.getReturn_type().isPresent())
             this.errors.add("At " + function.getPosition() + ": Expected return type "
                     + function.getReturn_type().get() + ", but none given");
-        // If given return type mismatch expected return type, error
+            // If given return type mismatch expected return type, error
         else if (returnType.isPresent() && function.getReturn_type().isPresent() && !returnType.equals(function.getReturn_type())) {
             this.errors.add("At " + function.getPosition() + ": Expected return type "
                     + function.getReturn_type().get() + ", but type "
