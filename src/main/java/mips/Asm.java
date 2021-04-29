@@ -43,14 +43,11 @@ public class Asm {
 
     private static String memoryOperation(int size, String op) {
         assert (op.equals("l") || op.equals("s"));
-        switch (size) {
-            case 1:
-                return op + "b";
-            case 2:
-                return op + "h";
-            default:
-                return op + "w";
-        }
+        return switch (size) {
+            case 1 -> op + "b";
+            case 2 -> op + "h";
+            default -> op + "w";
+        };
     }
 
     public static String load(int size) {
