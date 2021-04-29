@@ -28,10 +28,10 @@ public class Binary extends Expression
 
     @Override
     public Type getType() {
-        switch (op){
-            case ADD:case DIV:case MOD: case MUL:case SUB: return Type.INT;
-            default: return Type.BYTE;
-        }
+        return switch (op) {
+            case ADD, DIV, MOD, MUL, SUB -> Type.INT;
+            default -> Type.BYTE;
+        };
     }
 
     @Override

@@ -5,8 +5,7 @@ import ir.expr.Expression;
 
 import java.util.List;
 
-public class ProcCall extends Command
-{
+public class ProcCall extends Command {
     private ir.Frame frame;
     private List<Expression> arguments;
 
