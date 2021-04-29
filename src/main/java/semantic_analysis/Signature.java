@@ -66,17 +66,6 @@ public class Signature {
         return new Signature(argTypes, Optional.of(rt));
     }
 
-    public final static Signature binaryArithmetic =
-            buildBinary(Integer, Integer, Integer);
-    public final static Signature binaryBoolean =
-            buildBinary(Bool, Bool, Bool);
-    public final static Signature unaryArithmetic =
-            buildUnary(Integer, Integer);
-    public final static Signature unaryBoolean =
-            buildUnary(Bool, Bool);
-    public final static Signature comparison =
-            buildBinary(Integer, Integer, Bool);
-
     public boolean check(List<Type> types) {
         if (types.size() == argumentsTypes.size()) {
             for (Integer counter = 0; counter < types.size(); counter++)

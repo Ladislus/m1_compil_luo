@@ -60,34 +60,34 @@ public class PredefinedFrames
                     new LinkedList<>(),
                     new Register(Type.ADDRESS));
 
-//    public static final Frame INPUT_BOOL =
-//            new ir.Frame(Label.named("entryReadBool"),
-//                    Label.named("exitReadBool"),
-//                    new LinkedList<>(),
-//                    new LinkedList<>(),
-//                    new Register(Type.BYTE));
+    public static final Frame INPUT_BOOL =
+            new ir.Frame(Label.named("entryReadBool"),
+                    Label.named("exitReadBool"),
+                    new LinkedList<>(),
+                    new LinkedList<>(),
+                    new Register(Type.BYTE));
 
-//    public static final Frame PRINT_INT =
-//            new ir.Frame(Label.named("entryPrintInt"),
-//                Label.named("exitPrintInt"),
-//                ListTools.singleton(new Register(ir.Type.INT)),
-//                ListTools.singleton(false));
-//
-//    public static final Frame PRINT_CHAR =
-//            new ir.Frame(Label.named("entryPrintChar"),
-//                    Label.named("exitPrintChar"),
-//                    ListTools.singleton(new Register(ir.Type.BYTE)),
-//                    ListTools.singleton(false));
-//
-//    public static final Frame PRINT_BOOL =
-//            new ir.Frame(Label.named("entryPrintBool"),
-//                    Label.named("exitPrintBool"),
-//                    ListTools.singleton(new Register(ir.Type.BYTE)),
-//                    ListTools.singleton(false));
-//
-//    public static final Frame PRINT_STRING =
-//            new ir.Frame(Label.named("entryPrintString"),
-//                    Label.named("exitPrintString"),
-//                    ListTools.singleton(new Register(Type.ADDRESS)),
-//                    ListTools.singleton(false));
+    public static final Frame PRINT_INT =
+            new ir.Frame(Label.named("entryPrintInt"),
+                Label.named("exitPrintInt"),
+                ListTools.singleton(new Register(ir.Type.INT)),
+                ListTools.singleton(false));
+
+    public static final Frame PRINT_CHAR =
+            new ir.Frame(Label.named("entryPrintChar"),
+                    Label.named("exitPrintChar"),
+                    ListTools.singleton(new Register(ir.Type.BYTE)),
+                    ListTools.singleton(false));
+
+    public static final Frame PRINT_BOOL =
+            new ir.Frame(Label.named("entryPrintBool"),
+                    Label.named("exitPrintBool"),
+                    ListTools.singleton(new Register(ir.Type.BYTE)),
+                    ListTools.singleton(false));
+
+    public static final Frame PRINT_STRING =
+            new ir.Frame(Label.named("entryPrintString"),
+                    Label.named("exitPrintString"),
+                    ListTools.singleton(new Register(Type.ADDRESS)),
+                    ListTools.singleton(false));
 }
