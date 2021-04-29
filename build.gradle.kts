@@ -28,8 +28,10 @@ tasks.generateGrammarSource {
     outputDirectory = file("src/main/java/parser")
 }
 
+
 val run: JavaExec by tasks
 run.standardInput = System.`in`
+run.enableAssertions = true
 
 application {
     mainClass.set("luo.Main")

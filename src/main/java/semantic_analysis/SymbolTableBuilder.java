@@ -21,6 +21,7 @@ public class SymbolTableBuilder
   public SymbolTableBuilder() {
     this.errors = new Errors();
     this.symbolTable = new SymbolTable();
+    Signatures.addPredefinedSignature(this.symbolTable);
     this.visitedBlocks = new VisitedBlocks();
   }
 
@@ -28,7 +29,11 @@ public class SymbolTableBuilder
     return errors;
   }
 
-  public SymbolTable getSymbolTable() { return symbolTable; }
+  public SymbolTable getSymbolTable(){
+    if (errors.hasErrors())
+      throw new Error("Semantic analysis detected errors");
+    return symbolTable;
+  }
 
   private static List<Pair<String, Type>> fieldsDefinitionOf(TypeDefinition typeDefinition) {
     return typeDefinition.getDeclarations().stream()

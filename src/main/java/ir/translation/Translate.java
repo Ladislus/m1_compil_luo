@@ -20,33 +20,33 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Translate {
-    private static final TypeConverter typeConverter = new TypeConverter();
-    private static final Errors errors = new Errors();
+  public static final Errors errors = new Errors();
+  private static final TypeConverter typeConverter = new TypeConverter();
 
-    /**
-     * Convert an Type object to an ir.Type.
-     *
-     * @param type a Type object
-     * @return an IR type i.e. BYTE, INT or ADDRESS.
-     */
-    private static ir.Type ofType(ast.Type type) {
-        return type.accept(typeConverter);
+  /**
+   * Convert an Type object to an ir.Type.
+   *
+   * @param type a Type object
+   * @return an IR type i.e. BYTE, INT or ADDRESS.
+   */
+  private static ir.Type ofType(ast.Type type) {
+    return type.accept(typeConverter);
+  }
+
+  public static Pair<Label, List<Pair<Frame, List<Command>>>> run(SymbolTable symbolTable, Program program) {
+    TranslationVisitor translator = new TranslationVisitor(symbolTable);
+    program.accept(translator);
+    return new Pair<>(translator.mainLabel, translator.fragments);
+  }
+
+  /**
+   * A visitor of Type, to convert such a type to an ir.Type.
+   */
+  private static class TypeConverter extends ast.VisitorBase<ir.Type> {
+    @Override
+    public ir.Type visit(TypArray type) {
+      return ir.Type.ADDRESS;
     }
-
-    public static Pair<Label, List<Pair<Frame, List<Command>>>> run(SymbolTable symbolTable, Program program) {
-        TranslationVisitor translator = new TranslationVisitor(symbolTable);
-        program.accept(translator);
-        return new Pair<>(translator.mainLabel, translator.fragments);
-    }
-
-    /**
-     * A visitor of Type, to convert such a type to an ir.Type.
-     */
-    private static class TypeConverter extends ast.VisitorBase<ir.Type> {
-        @Override
-        public ir.Type visit(TypArray type) {
-            return ir.Type.ADDRESS;
-        }
 
         @Override
         public ir.Type visit(TypDico type) {
@@ -522,20 +522,17 @@ public class Translate {
             return new Result(code);
         }
 
-        @Override
-        public Result visit(Function fun) {
-            String functionName = fun.getName();
-            List<Signature> signaturesForThisName = symbolTable.functionLookup(functionName);
-            Signature signature = Signature.signatureOf(fun);
-            int index = signaturesForThisName.indexOf(signature);
-            Frame frame = frames.get(new Pair<>(functionName, index));
-            assert frame != null : "Internal Error: no frame for function " + fun.getName();
-            currentFrame = frame;
-            Result result = fun.getBody().accept(this);
-            // If result contains an expression part, it is just discarded
-            fragments.add(new Pair<>(frame, result.getCode()));
-            return null;
-        }
+    @Override
+    public Result visit(Function fun) {
+      Pair<String, Integer> key = getFunctionKey(fun);
+      Frame frame = frames.get(key);
+      assert frame != null : "Internal Error: no frame for function " + key;
+      currentFrame = frame;
+      Result result = fun.getBody().accept(this);
+      // If result contains an expression part, it is just discarded
+      fragments.add(new Pair<>(frame, result.getCode()));
+      return null;
+    }
 
         @Override
         public Result visit(Program program) {
@@ -547,78 +544,57 @@ public class Translate {
             return null;
         }
 
-        private class FramesBuilder extends ast.VisitorBase<Void> {
+    private Pair<String, Integer> getFunctionKey(Function function) {
+      return getFunctionKeyByNameSignature(function.getName(), Signature.signatureOf(function));
+    }
 
-            @Override
-            public Void visit(Function function) {
-                List<Register> parameters = new LinkedList<>();
-                for (Declaration argument : function.getParameters()) {
-                    if (argument.getExpression().isPresent())
-                        errors.add("Translate: parameter with default value not supported " + argument.getPosition());
-                    ast.Type argType = argument.getType();
-                    String argName = argument.getVariable();
-                    Register register = new Register(ofType(argType));
-                    varToReg.put(new Pair<>(function.getBody(), argName), register);
-                    parameters.add(register);
-                }
-                Frame frame;
-                if (function.getReturn_type().isPresent()) {
-                    Type type = function.getReturn_type().get();
-                    ir.Type irType = ofType(type);
-                    frame = new Frame(Label.fresh(), Label.fresh(), parameters, new Register(irType));
-                } else
-                    frame = new Frame(Label.fresh(), Label.fresh(), parameters);
+    private Pair<String, Integer> getFunctionKeyByNameSignature(String functionName, Signature signature) {
+      List<Signature> signaturesForThisName = symbolTable.functionLookup(functionName);
+      int index = signaturesForThisName.indexOf(signature);
+      return new Pair<>(functionName, index);
+    }
 
-                String functionName = function.getName();
-                Signature signature = Signature.signatureOf(function);
-                List<Signature> signaturesForThisName = symbolTable.functionLookup(functionName);
-                Integer index = signaturesForThisName.indexOf(signature);
-                frames.put(new Pair<>(functionName, index), frame);
-                if (function.getName().equals("main"))
-                    mainLabel = frame.getEntryPoint();
-                return null;
-            }
+    private class FramesBuilder extends ast.VisitorBase<Void> {
 
-            @Override
-            public Void visit(Program program) {
-                for (Function function : program.getFunctions())
-                    function.accept(this);
-
-                // Added frames for predefined functions
-                frames.put(new Pair<>("length", 0), PredefinedFrames.LENGTH);
-                String[] predefinedFunctions = {"toInt", "toChar", "inputString", "inputInt", "inputChar"};
-                for (String currentPredefinedFunction : predefinedFunctions) {
-                    switch (currentPredefinedFunction) {
-                        case "toInt" -> frames.put(
-                                new Pair<>(
-                                        currentPredefinedFunction,
-                                        symbolTable.functionLookup(currentPredefinedFunction).indexOf(Signatures.premade.get(EnumPredefinedOp.CHARTOINT))),
-                                PredefinedFrames.CHAR_TO_INT);
-                        case "toChar" -> frames.put(
-                                new Pair<>(
-                                        currentPredefinedFunction,
-                                        symbolTable.functionLookup(currentPredefinedFunction).indexOf(Signatures.premade.get(EnumPredefinedOp.INTTOCHAR))),
-                                PredefinedFrames.INT_TO_CHAR);
-                        case "inputString" -> frames.put(
-                                new Pair<>(
-                                        currentPredefinedFunction,
-                                        symbolTable.functionLookup(currentPredefinedFunction).indexOf(Signatures.premade.get(EnumPredefinedOp.INSTRING))),
-                                PredefinedFrames.INPUT_STRING);
-                        case "inputInt" -> frames.put(
-                                new Pair<>(
-                                        currentPredefinedFunction,
-                                        symbolTable.functionLookup(currentPredefinedFunction).indexOf(Signatures.premade.get(EnumPredefinedOp.ININT))),
-                                PredefinedFrames.INPUT_INT);
-                        case "inputChar" -> frames.put(
-                                new Pair<>(
-                                        currentPredefinedFunction,
-                                        symbolTable.functionLookup(currentPredefinedFunction).indexOf(Signatures.premade.get(EnumPredefinedOp.INCHAR))),
-                                PredefinedFrames.INPUT_CHAR);
-                    }
-                }
-
-                return null;
-            }
+      @Override
+      public Void visit(Function function) {
+        List<Register> parameters = new LinkedList<>();
+        for (Declaration argument : function.getParameters()) {
+          if (argument.getExpression().isPresent())
+            errors.add("Translate: parameter with default value not supported " + argument.getPosition());
+          ast.Type argType = argument.getType();
+          String argName = argument.getVariable();
+          Register register = new Register(ofType(argType));
+          varToReg.put(new Pair<>(function.getBody(), argName), register);
+          parameters.add(register);
         }
+        Frame frame;
+        if (function.getReturn_type().isPresent()) {
+          Type type = function.getReturn_type().get();
+          ir.Type irType = ofType(type);
+          frame = new Frame(Label.fresh(), Label.fresh(), parameters, new Register(irType));
+        } else
+          frame = new Frame(Label.fresh(), Label.fresh(), parameters);
+
+        frames.put(getFunctionKey(function), frame);
+        if (function.getName().equals("main"))
+          mainLabel = frame.getEntryPoint();
+        return null;
+      }
+
+      private void addPredefinedFunctions() {
+        frames.put(getFunctionKeyByNameSignature("print", Signatures.printChar), PredefinedFrames.PRINT_CHAR);
+        frames.put(getFunctionKeyByNameSignature("print", Signatures.printInt), PredefinedFrames.PRINT_INT);
+        frames.put(getFunctionKeyByNameSignature("print", Signatures.printBool), PredefinedFrames.PRINT_BOOL);
+        frames.put(getFunctionKeyByNameSignature("print", Signatures.printString), PredefinedFrames.PRINT_STRING);
+      }
+
+      @Override
+      public Void visit(Program program) {
+        for (Function function : program.getFunctions())
+          function.accept(this);
+        addPredefinedFunctions();
+        return null;
+      }
     }
 }

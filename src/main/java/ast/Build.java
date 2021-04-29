@@ -2,6 +2,7 @@ package ast;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import parser.LuoBaseVisitor;
 import parser.LuoLexer;
@@ -23,7 +24,7 @@ public class Build extends LuoBaseVisitor<Node> {
   }
 
   @SuppressWarnings("unchecked")
-  private <T,TC> List<T> makeList(List<? extends ParserRuleContext> contexts) {
+  private <T> List<T> makeList(List<? extends ParserRuleContext> contexts) {
     List<T> nodes = new ArrayList<>();
     for (ParserRuleContext context : contexts)
       nodes.add((T) context.accept(this));
@@ -45,7 +46,9 @@ public class Build extends LuoBaseVisitor<Node> {
 
   @Override
   public Node visitExpArrayEnumeration(LuoParser.ExpArrayEnumerationContext ctx) {
-    List<Expression> expressions = makeList(ctx.expression_list().expression());
+    List<LuoParser.ExpressionContext> contexts =
+      ctx.expression_list() == null ? new ArrayList<>() : ctx.expression_list().expression();
+    List<Expression> expressions = makeList(contexts);
     return new ExpArrayEnum(position(ctx), expressions);
   }
 
@@ -260,7 +263,10 @@ public class Build extends LuoBaseVisitor<Node> {
   @Override
   public Node visitExpFunctionCall(LuoParser.ExpFunctionCallContext ctx) {
     String name = ctx.Identifier().getText();
-    List<Expression> arguments = makeList(ctx.expression_list().expression());
+    List<LuoParser.ExpressionContext> contexts =
+      ctx.expression_list() == null ? new ArrayList<>() :
+        ctx.expression_list().expression();
+    List<Expression> arguments = makeList(contexts);
     return new ExpFunctionCall(position(ctx), name, arguments);
   }
 
@@ -268,7 +274,7 @@ public class Build extends LuoBaseVisitor<Node> {
     switch(token.getType()){
       case LuoLexer.Minus: return EnumUnaryOp.MINUS;
       case LuoLexer.Negation: return EnumUnaryOp.NOT;
-      case LuoLexer.PlusPlus:Plus: return EnumUnaryOp.INC;
+      case LuoLexer.PlusPlus: return EnumUnaryOp.INC;
       case LuoLexer.MinusMinus: return EnumUnaryOp.DEC;
     }
     throw new Error("ast.Build: Undefined unary operation");
@@ -344,7 +350,7 @@ public class Build extends LuoBaseVisitor<Node> {
 
   @Override
   public Node visitExpBoolean(LuoParser.ExpBooleanContext ctx) {
-    return new ExpBoolean(position(ctx), ctx.Boolean().getSymbol().equals("true"));
+    return new ExpBoolean(position(ctx), ctx.Boolean().getSymbol().getText().equals("true"));
   }
 
   @Override
@@ -360,7 +366,7 @@ public class Build extends LuoBaseVisitor<Node> {
             ctx.Identifier()
                     .subList(1, ctx.Identifier().size())
                     .stream()
-                    .map((t)->t.getText())
+                    .map(ParseTree::getText)
                     .collect(Collectors.toList());
     List<Type> fieldTypes =
             ctx.type_expression()
@@ -429,12 +435,6 @@ public class Build extends LuoBaseVisitor<Node> {
             ctx.expression() == null ? Optional.empty() :
                     Optional.of((Expression) ctx.expression().accept(this));
     return new Declaration(position(ctx), type, variable, expression);
-  }
-
-  private List<Declaration> makeArgumentList(LuoParser.Argument_listContext ctx) {
-    return ctx.argument().stream()
-            .map(this::makeArgument)
-            .collect(Collectors.toList());
   }
 
   @Override

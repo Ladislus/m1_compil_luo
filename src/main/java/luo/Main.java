@@ -1,31 +1,49 @@
 package luo;
 
 import ast.Build;
-import ir.translation.Translate;
+import ir.Frame;
+import ir.com.Command;
+import ir.com.Label;
+import mips.Program;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import parser.LuoLexer;
 import parser.LuoParser;
+import ir.translation.Translate;
 import semantic_analysis.SymbolTable;
 import semantic_analysis.SymbolTableBuilder;
-import semantic_analysis.TypeChecker;
+import support.Errors;
+import support.Pair;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.util.List;
 
 public class Main {
 
-    private enum Error {
+    private enum ErrorCode {
         SUCCESS,
         NO_FILE_NAME,
         FILE_NOT_FOUND,
         SYNTAX_ERROR,
         SEMANTIC_ERROR,
-        TYPE_ERROR
+        TRANSLATION_TO_IR_ERROR,
+        COMPILATION_ERROR
+    }
+
+    private static void exitWithCode(ErrorCode code){
+        System.exit(code.ordinal());
+    }
+
+    private static void ifHasErrorsPrintAndExit(Errors errors, ErrorCode code){
+        if (errors.hasErrors()){
+            errors.print();
+            exitWithCode(code);
+        }
     }
 
     private static ast.Program buildAst(ParseTree parseTree){
@@ -38,7 +56,7 @@ public class Main {
             if (fileName != null)
                 return new FileInputStream(fileName);
         } catch (FileNotFoundException e) {
-            System.exit(Error.FILE_NOT_FOUND.ordinal());
+            exitWithCode(ErrorCode.FILE_NOT_FOUND);
         }
         return System.in;
     }
@@ -53,30 +71,45 @@ public class Main {
         // Parse the input: the result is a parse tree
         ParseTree tree = parser.program();
         if (parser.getNumberOfSyntaxErrors() != 0)
-            System.exit(Error.SYNTAX_ERROR.ordinal());
+            exitWithCode(ErrorCode.SYNTAX_ERROR);
         return tree;
     }
 
-    private static void analyze(ast.Program program) {
+    private static SymbolTable analyze(ast.Program program){
         SymbolTableBuilder builder = new SymbolTableBuilder();
         program.accept(builder);
-        if (builder.getErrors().hasErrors()) {
-            builder.getErrors().print();
-            System.exit(Error.SEMANTIC_ERROR.ordinal());
-        } else typecheck(program, builder.getSymbolTable());
+        ifHasErrorsPrintAndExit(builder.getErrors(), ErrorCode.SEMANTIC_ERROR);
+        return builder.getSymbolTable();
     }
 
-    private static void typecheck(ast.Program program, SymbolTable symbolTable) {
-        TypeChecker tc = new TypeChecker(symbolTable);
-        program.accept(tc);
-        if (tc.getErrors().hasErrors()) {
-            tc.getErrors().print();
-            System.exit(Error.TYPE_ERROR.ordinal());
-        } else irTranslation(program, symbolTable);
+    private static Pair<Label, List<Pair<Frame, List<Command>>>> translate(SymbolTable symbolTable, ast.Program program){
+        Pair<Label, List<Pair<Frame, List<Command>>>> result = Translate.run(symbolTable, program);
+        ifHasErrorsPrintAndExit(Translate.errors, ErrorCode.TRANSLATION_TO_IR_ERROR);
+        return result;
     }
 
-    private static void compile(ast.Program program){
-        // TO COMPLETE
+    private static Path changeExtension(Path path, String oldExt, String newExt) {
+        PathMatcher pm = FileSystems.getDefault()
+          .getPathMatcher("glob:*" + oldExt);
+        if (pm.matches(path.getFileName())) {
+            String nameWithExtension = path.getFileName().toString();
+            int endIndex = nameWithExtension.length() - oldExt.length();
+            String name = nameWithExtension.substring(0, endIndex);
+            if (path.getParent() != null)
+                return path.getParent().resolve(name + newExt);
+            else
+                return FileSystems.getDefault().getPath(name + newExt);
+        }
+        return path;
+    }
+
+    private static void compile(Path path,
+                                Label mainLabel,
+                                List<Pair<Frame, List<Command>>> fragments) {
+        Path newPath = FileSystems.getDefault().getPath(
+          changeExtension(path, ".luo", ".asm").getFileName().toString());
+        mips.Program.generate(newPath, mainLabel, fragments);
+        ifHasErrorsPrintAndExit(mips.Program.errors, ErrorCode.COMPILATION_ERROR);
     }
 
     private static void irTranslation(ast.Program program, SymbolTable symbolTable) {
@@ -86,14 +119,15 @@ public class Main {
     public static void main(String[] arguments) throws IOException {
         if (arguments.length == 0)
             // No name given to the command line
-            System.exit(Error.NO_FILE_NAME.ordinal());
+            exitWithCode(ErrorCode.NO_FILE_NAME);
         String fileName = arguments[0];
         InputStream inputStream = getInputStream(fileName);
         ParseTree parseTree = parse(inputStream);
         ast.Program program = buildAst(parseTree);
-        analyze(program);
-        // printer.NotSoPretty.print(program);
-        // All is fine
-        System.exit(Error.SUCCESS.ordinal());
+        SymbolTable symbolTable = analyze(program);
+        Pair<Label, List<Pair<Frame, List<Command>>>> irRepresentation = translate(symbolTable, program);
+        Path path = FileSystems.getDefault().getPath(fileName);
+        compile(path, irRepresentation.getFst(), irRepresentation.getSnd());
+        exitWithCode(ErrorCode.SUCCESS);
     }
 }
